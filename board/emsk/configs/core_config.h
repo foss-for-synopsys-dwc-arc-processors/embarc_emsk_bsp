@@ -1,3 +1,5 @@
+/* EMSK2.3 ARC EM11D */
+
 #ifndef __core_config_h
 	#define __core_config_h  1
 	#define	core_config_cir_identity	0x00000043

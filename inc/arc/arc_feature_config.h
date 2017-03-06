@@ -47,7 +47,7 @@
 
 // Enable core_config.h in EMSK OSP
 //#ifdef EMBARC_TCF_GENERATED
-#include "inc/arc/core_config.h"
+#include "board/emsk/configs/core_config.h"
 //#endif
 
 /** ARC baseline instruction set version number */
