@@ -43,7 +43,7 @@
 #ifndef _DW_UART_OBJ_H_
 #define _DW_UART_OBJ_H_
 
-#include "board/emsk/uart/dev_uart.h"
+#include "device/device_hal/inc/dev_uart.h"
 
 /**
  * \name	DesignWare UART Object Number

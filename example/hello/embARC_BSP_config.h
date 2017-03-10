@@ -31,37 +31,22 @@
  * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
-/**
- * \file
- * \ingroup	COMMON_CONFIG
- * \brief	header file to define common definitions error management
- */
-
-/**
- * \addtogroup	COMMON_CONFIG
- * @{
- */
-
-#ifndef _COMMON_CONFIG_H_
-#define _COMMON_CONFIG_H_
+#ifndef _EMBARC_BSP_CONFIG_H_
+#define _EMBARC_BSP_CONFIG_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define BOARD_EMSK
 /****************************************************************************
- * OSP Definition
+ * BSP Definitions
  ****************************************************************************/
 /**
  *  Toolchain Definition for MetaWare or GNU
  */
 #define __MW__
-// #define __GNU__
-
-/**
- *  Use task_main in embARC Startup process. See board/board.c for details.
- */
-#define EMBARC_USE_BOARD_MAIN
+//#define __GNU__
 
 /**
  *  Must be set.
@@ -69,8 +54,8 @@ extern "C" {
  *	.stack ALIGN(4) SIZE(524288): {}
  *	.heap? ALIGN(4) SIZE(524288): {}
  */
-#define _STACKSIZE			524288
-#define _HEAPSZ				524288
+#define _STACKSIZE			8192
+#define _HEAPSZ				8192
 
 
 
@@ -78,5 +63,4 @@ extern "C" {
 }
 #endif
 
-#endif /* _COMMON_CONFIG_H_ */
-/** @} end of group COMMON_CONFIG */
+#endif /* _EMBARC_CONFIG_BSP_H_ */

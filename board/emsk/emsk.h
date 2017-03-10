@@ -52,7 +52,7 @@
 
 #include "board/emsk/common/emsk_timer.h"
 
-#include "board/emsk/configs/emsk_hardware.h"
+#include "board/emsk/emsk_hardware.h"
 
 #define EMSK_GPIO_PORT_A		DW_GPIO_PORT_A
 #define EMSK_GPIO_PORT_B		DW_GPIO_PORT_B

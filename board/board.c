@@ -31,9 +31,8 @@
  * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 #include "inc/arc/arc_builtin.h"
-#include "board/emsk/emsk.h"
-
-#include "inc/common_config.h"
+#include "board/board.h"
+#include "common/console_io.h"
 
 typedef struct main_args {
 	int argc;
