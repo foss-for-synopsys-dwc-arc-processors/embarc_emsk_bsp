@@ -27,36 +27,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \version 2017.03
- * \date 2016-01-20
- * \author Wayne Ren(Wei.Ren@synopsys.com)
+ * \date 2014-07-03
+ * \author Huaqi Fang(Huaqi.Fang@synopsys.com)
 --------------------------------------------- */
-#include "inc/arc/arc_builtin.h"
-#include "board/board.h"
-#include "common/console_io.h"
+/**
+ * \file
+ * \ingroup	BOARD_EMSK_DRV_DW_IIC_OBJ
+ * \brief	header file of designware iic object instantiation on emsk
+ */
 
-typedef struct main_args {
-	int argc;
-	char *argv[];
-} MAIN_ARGS;
+/**
+ * \addtogroup	BOARD_EMSK_DRV_DW_IIC_OBJ
+ * @{
+ */
+#ifndef _DW_IIC_OBJ_H_
+#define _DW_IIC_OBJ_H_
 
-/** Change this to pass your own arguments to main functions */
-MAIN_ARGS s_main_args = {1, {"main"}};
+#include "device/device_hal/inc/dev_iic.h"
 
-static void enter_to_main(MAIN_ARGS *main_arg)
-{
-	if (main_arg == NULL) {
-	/* null or aligned not to 4 bytes */
-		_arc_goto_main(0, NULL);
-	} else {
-		_arc_goto_main(main_arg->argc, main_arg->argv);
-	}
+/**
+ * \name	DesignWare IIC Object Number
+ * @{
+ */
+#define DW_IIC_NUM		(1)	/*!< DesignWare IIC valid number */
+/** @} end of name */
+
+/**
+ * \name	Designware IIC Object ID Macros
+ * @{
+ */
+#define DW_IIC_0_ID		0	/*!< iic 0 id macro */
+#define DW_IIC_1_ID		1	/*!< iic 1 id macro */
+/** @} end of name */
+
+/**
+ * \name	Designware IIC Object Control Macros
+ * @{
+ */
+#define USE_DW_IIC_0	1	/*!< enable use designware iic 0 */
+#define USE_DW_IIC_1	1	/*!< enable use designware iic 1 */
+/** @} end of name */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void dw_iic_all_install(void);
+
+#ifdef __cplusplus
 }
+#endif
 
-void board_main(void)
-{
-/* board level hardware init */
-	board_init();
-	xprintf_setup();
-	cpu_unlock();	/* unlock cpu to let interrupt work */
-	enter_to_main(&s_main_args);
-}
+#endif /* _DW_IIC_OBJ_H_ */
+
+/** @} end of group BOARD_EMSK_IIC_OBJ */

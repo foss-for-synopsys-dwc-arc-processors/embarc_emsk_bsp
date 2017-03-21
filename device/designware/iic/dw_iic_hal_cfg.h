@@ -27,36 +27,56 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \version 2017.03
- * \date 2016-01-20
- * \author Wayne Ren(Wei.Ren@synopsys.com)
+ * \date 2014-07-01
+ * \author Huaqi Fang(Huaqi.Fang@synopsys.com)
 --------------------------------------------- */
-#include "inc/arc/arc_builtin.h"
-#include "board/board.h"
-#include "common/console_io.h"
 
-typedef struct main_args {
-	int argc;
-	char *argv[];
-} MAIN_ARGS;
+/**
+ * \file
+ * \ingroup	DEVICE_DW_IIC
+ * \brief	DesignWare IIC driver hardware description
+ * 	related header file configuration file
+ * \details	configuration file to enable or disable some function of iic
+ */
 
-/** Change this to pass your own arguments to main functions */
-MAIN_ARGS s_main_args = {1, {"main"}};
+#ifndef _DEVICE_DW_IIC_HAL_CFG_H_
+#define _DEVICE_DW_IIC_HAL_CFG_H_
 
-static void enter_to_main(MAIN_ARGS *main_arg)
-{
-	if (main_arg == NULL) {
-	/* null or aligned not to 4 bytes */
-		_arc_goto_main(0, NULL);
-	} else {
-		_arc_goto_main(main_arg->argc, main_arg->argv);
-	}
-}
+#ifndef DW_IIC_ALLOW_RESTART
+#define DW_IIC_ALLOW_RESTART			(1)	/*!< allow restart configuration */
+#endif
 
-void board_main(void)
-{
-/* board level hardware init */
-	board_init();
-	xprintf_setup();
-	cpu_unlock();	/* unlock cpu to let interrupt work */
-	enter_to_main(&s_main_args);
-}
+#ifdef DW_IIC_SPECIAL_START_BYTE
+#define DW_IIC_SPECIAL_START_BYTE		(0)	/*!< SPECIAL bit enable in IC_TAR */
+#endif
+
+#ifndef DW_IIC_MST_10_BIT_ADDR_SUPPORT
+#define DW_IIC_MST_10_BIT_ADDR_SUPPORT		(1)	/*!< enable 10-bit address mode */
+#endif
+
+#ifdef DW_IIC_SLV_10_BIT_ADDR_SUPPORT
+#define DW_IIC_SLV_10_BIT_ADDR_SUPPORT		(1)	/*!< slave 10-bit addressing mode */
+#endif
+
+#ifndef DW_IIC_DYNAMIC_TAR_UPDATE_SUPPORT
+#define DW_IIC_DYNAMIC_TAR_UPDATE_SUPPORT	(0)	/*!< Dynamic target address update support */
+#endif
+
+#ifndef DW_IIC_DISABLE_MAX_T_POLL_CNT
+#define DW_IIC_DISABLE_MAX_T_POLL_CNT		(1250)	/*!< Timeout count, approximate to be 25us in 50MHz CPU @ Standard mode */
+#endif
+
+#ifndef DW_IIC_CALC_FIFO_LEN_ENABLE
+#define DW_IIC_CALC_FIFO_LEN_ENABLE		(1)	/*!< Default enable calculate fifo length */
+#endif
+
+#ifndef DW_IIC_USE_IC_CLK_MHZ
+#define DW_IIC_USE_IC_CLK_MHZ			(50)	/*!< Default use 50MHz IC_CLK */
+#endif
+
+#ifndef DW_IIC_USE_HS_BUS_LOADING_100PF
+#define DW_IIC_USE_HS_BUS_LOADING_100PF		(1)	/*!< Use bus loading 100pf */
+#endif
+
+#endif /* _DEVICE_DW_IIC_HAL_CFG_H_ */
+

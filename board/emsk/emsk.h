@@ -49,6 +49,7 @@
 #include "board/emsk/uart/dw_uart_obj.h"
 #include "board/emsk/gpio/dw_gpio_obj.h"
 #include "board/emsk/gpio/emsk_gpio.h"
+#include "board/emsk/iic/dw_iic_obj.h"
 
 #include "board/emsk/common/emsk_timer.h"
 
@@ -68,14 +69,6 @@
 
 #define BOARD_TEMP_IIC_SLVADDR		TEMP_I2C_SLAVE_ADDRESS
 
-#define BOARD_SDCARD_SPI_ID		DW_SPI_0_ID
-#define BOARD_WIFI_SPI_ID		DW_SPI_0_ID
-#define BOARD_SFLASH_SPI_ID		DW_SPI_0_ID
-
-#define BOARD_SDCARD_SPI_LINE		EMSK_SPI_LINE_SDCARD
-#define BOARD_WIFI_SPI_LINE		EMSK_SPI_LINE_1
-#define BOARD_SFLASH_SPI_LINE		EMSK_SPI_LINE_SFLASH
-
 #ifndef BOARD_SPI_FREQ
 #define BOARD_SPI_FREQ			(1000000)
 #endif
@@ -93,8 +86,6 @@
 /** board timer count frequency convention based on the global timer counter */
 #define BOARD_SYS_TIMER_MS_CONV		(BOARD_SYS_TIMER_MS_HZ/BOARD_SYS_TIMER_HZ)
 
-#define BOARD_OS_TIMER_ID		TIMER_0
-#define BOARD_OS_TIMER_INTNO		INTNO_TIMER0
 
 #define BOARD_CPU_CLOCK			CLK_CPU
 #define BOARD_DEV_CLOCK			CLK_BUS_APB
