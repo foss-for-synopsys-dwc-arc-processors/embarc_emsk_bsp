@@ -61,8 +61,8 @@
 
 #define __ASSEMBLY__
 #include "embARC_BSP_config.h"
-#include "../inc/arc/arc.h"
-#include "../inc/arc/arc_asm_common.h"
+#include "inc/arc/arc.h"
+#include "inc/arc/arc_asm_common.h"
 
 	.file "arc_exc_asm.S"
 
