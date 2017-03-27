@@ -33,6 +33,7 @@
 #include "inc/arc/arc_builtin.h"
 #include "board/board.h"
 #include "common/console_io.h"
+#include "string.h"
 
 typedef struct main_args {
 	int argc;
