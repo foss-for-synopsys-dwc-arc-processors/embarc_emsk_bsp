@@ -66,10 +66,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "board/emsk/emsk.h"
-
-#include "common/xprintf/xprintf.h"
-#include "common/console_io.h"
+#include "board/board.h"
+#include "inc/embARC_debug.h"
 
 #define LED_TOGGLE_MASK		BOARD_LED_MASK
 
@@ -77,14 +75,12 @@ int main(void) {
 
 	uint16_t led_toggle_val = LED_TOGGLE_MASK;
 
-	/* Setup xprintf function in console via UART  */
-	xprintf_setup();
-	xprintf("!!!Hello World!!!\r\n"); /* prints !!!Hello World!!! */
+	EMBARC_PRINTF("!!!Hello World!!!\r\n"); /* prints !!!Hello World!!! */
 
 	while(1) {
 		led_write(led_toggle_val, BOARD_LED_MASK);
 		led_toggle_val = ~led_toggle_val;
-		xprintf("The onboard LED is turned.\r\n");
+		EMBARC_PRINTF("The onboard LED is turned.\r\n");
 
 		board_delay_ms(1000, 0);
 	}

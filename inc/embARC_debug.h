@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,32 +26,74 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-06-23
- * \author Huaqi Fang(Huaqi.Fang@synopsys.com)
+ * \version 2017.03
+ * \date 2014-12-26
+ * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
  * \file
- * \brief  common io implementation
+ * \ingroup EMBARC_DEBUG
+ * \brief necessary definitions of debug
  */
-#ifndef _CONSOLE_IO_H_
-#define _CONSOLE_IO_H_
 
-#include <stdint.h>
+#ifndef _EMBARC_DEBUG_H_
+#define _EMBARC_DEBUG_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int console_putchar(unsigned char chr);
-extern int console_putstr(const char *str, unsigned int len);
-extern int console_getchar(void);
-extern int console_getstr(char *str, unsigned int len);
-extern void xprintf_setup(void);
+#ifndef EMBARC_PRINTF
+	#ifdef MID_COMMON
+		#include "common/xprintf.h"
+		#define EMBARC_PRINTF xprintf
+	#else
+		#include <stdio.h>
+		#define EMBARC_PRINTF printf
+	#endif
+#endif
+
+/*
+ * if you want to use DBG or dbg_printf,
+ * please define DEBUG or DBG_LESS or DBG_MORE before include embARC_debug.h
+ * DEBUG: enable debug print
+ * DBG_LESS: enable less debug msg
+ * DBG_MORE: enable more debug msg
+ **/
+
+#if defined(DEBUG)
+#if defined(DEBUG_HOSTLINK)
+#include <stdio.h>
+#define DBG(fmt, ...)	printf(fmt, ##__VA_ARGS__)
+#else
+#define DBG(fmt, ...)	EMBARC_PRINTF(fmt, ##__VA_ARGS__)
+#endif
+#else
+#define DBG(fmt, ...)
+#endif
+
+#define DBG_LESS_INFO	0x01    /* less debug  messages */
+#define DBG_MORE_INFO	0x02    /* more debug  messages */
+
+
+#if defined (DBG_LESS)
+#define DBG_TYPE		(DBG_LESS_INFO)
+#elif defined (DBG_MORE)
+#define DBG_TYPE		((DBG_LESS_INFO) | (DBG_MORE_INFO))
+#else
+#define DBG_TYPE 		0
+#endif
+
+#if DBG_TYPE > 0
+#define dbg_printf(type, fmt, ...) \
+		if (((type) & DBG_TYPE))  { EMBARC_PRINTF(fmt, ##__VA_ARGS__); }
+#else
+#define dbg_printf(type, fmt, ...)
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _CONSOLE_IO_H_ */
+#endif /* DEBUG_H_ */

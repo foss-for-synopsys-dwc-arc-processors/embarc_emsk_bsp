@@ -11,8 +11,7 @@
 /
 /-------------------------------------------------------------------------*/
 
-#include "common/xprintf/xprintf.h"
-
+#include "xprintf.h"
 
 #if _USE_XFUNC_OUT
 #include <stdarg.h>

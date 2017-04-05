@@ -36,11 +36,14 @@
  * \brief  common io implementation
  */
 #include <stdio.h>
-
+#include "inc/embARC_toolchain.h"
+#include "inc/arc/arc_builtin.h"
 #include "device/device_hal/inc/dev_uart.h"
 #include "common/console_io.h"
-#include "inc/arc/arc_builtin.h"
-#include "common/xprintf/xprintf.h"
+#include "common/xprintf.h"
+#include "board/board.h"
+
+#define CONSOLE_UART_ID		BOARD_CONSOLE_UART_ID	/*!< console uart id */
 
 /*!< to indicate xprintf setup state(0 for not setup) */
 static int xprintf_setup_flag = 0;

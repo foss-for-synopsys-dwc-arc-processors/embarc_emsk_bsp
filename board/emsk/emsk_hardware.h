@@ -44,6 +44,8 @@
 #ifndef _EMSK_HARDWARE_H_
 #define _EMSK_HARDWARE_H_
 
+#include "inc/arc/arc_feature_config.h"
+
 /** CPU Clock Frequency definition */
 #if defined(BOARD_CPU_FREQ)
 	/*!< Get cpu clock frequency definition from build system */
