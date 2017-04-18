@@ -45,7 +45,7 @@ extern "C" {
 /**
  *  Toolchain Definition for MetaWare or GNU
  */
-// #define __MW__
+//#define __MW__
 #define __GNU__
 
 /**

@@ -28,6 +28,7 @@
 	#define	core_config_bcr_d_cache_build_u	0
 	#define	core_config_bcr_d_cache_build_cycles	0
 	#define	core_config_bcr_dccm_build	0x00010804
+	#define	core_config_bcr_dccm_build_w	0
 	#define	core_config_bcr_dccm_build_cycles	0
 	#define	core_config_bcr_dccm_build_interleave	1
 	#define	core_config_bcr_dccm_build_size1	0
@@ -74,10 +75,10 @@
 	#define	core_config_bcr_dsp_build_comp	1
 	#define	core_config_bcr_dsp_build_divsqrt	1
 	#define	core_config_bcr_dsp_build_version	33
-	#define	core_config_bcr_multiply_build	0x00022a06
+	#define	core_config_bcr_multiply_build	0x00022206
 	#define	core_config_bcr_multiply_build_version16x16	2
 	#define	core_config_bcr_multiply_build_dsp	2
-	#define	core_config_bcr_multiply_build_cyc	2
+	#define	core_config_bcr_multiply_build_cyc	0
 	#define	core_config_bcr_multiply_build_type	2
 	#define	core_config_bcr_multiply_build_version32x32	6
 	#define	core_config_bcr_swap_build	0x00000003
@@ -90,7 +91,10 @@
 	#define	core_config_bcr_barrel_build_version	3
 	#define	core_config_bcr_barrel_build_shift_option	3
 	#define	core_config_bcr_isa_config	0x12447402
+	#define	core_config_bcr_isa_config_res1	0
 	#define	core_config_bcr_isa_config_d	1
+	#define	core_config_bcr_isa_config_res2	0
+	#define	core_config_bcr_isa_config_f	0
 	#define	core_config_bcr_isa_config_c	2
 	#define	core_config_bcr_isa_config_l	0
 	#define	core_config_bcr_isa_config_n	1
@@ -123,14 +127,14 @@
 	#define	core_config_bcr_agu_build_num_offset	8
 	#define	core_config_bcr_agu_build_num_addr	12
 	#define	core_config_bcr_agu_build_version	2
-	#define	core_config_bcr_dmac_build	0x000a0101
+	#define	core_config_bcr_dmac_build	0x000a0102
 	#define	core_config_bcr_dmac_build_int_cfg	1
 	#define	core_config_bcr_dmac_build_fifo	1
 	#define	core_config_bcr_dmac_build_chan_mem	0
 	#define	core_config_bcr_dmac_build_channels	1
-	#define	core_config_bcr_dmac_build_version	1
-	#define	core_config_bcr_core_config	0x00000001
-	#define	core_config_bcr_core_config_turbo_boost	0
+	#define	core_config_bcr_dmac_build_version	2
+	#define	core_config_bcr_core_config	0x00000101
+	#define	core_config_bcr_core_config_turbo_boost	1
 	#define	core_config_bcr_core_config_version	1
 	#define	core_config_bcr_irq_build	0x13121601
 	#define	core_config_bcr_irq_build_raz	0
@@ -169,6 +173,7 @@
 	#define	core_config_code_density	1
 	#define	core_config_div_rem	"radix2"
 	#define	core_config_div_rem_radix2	1
+	#define	core_config_turbo_boost	1
 	#define	core_config_swap	1
 	#define	core_config_bitscan	1
 	#define	core_config_mpy_option	"mpyd"
@@ -245,4 +250,3 @@
 	#define	core_config_dmac_int_config	"single_internal"
 	#define	core_config_clock_speed	20
 #endif /* __core_config_h */
-

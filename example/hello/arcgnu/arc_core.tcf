@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config_list>
-  <tool_config version="1.0.59" mwdt_version="M-2016.12" />
+  <tool_config version="1.0.60" mwdt_version="M-2016.12" />
   <configuration name="BCRs" filename="bcr_contents.txt">
     <string><![CDATA[
 	0x4	0x43		IDENTITY
@@ -16,7 +16,7 @@
 	0x78	0x804		ICCM_BUILD
 	0x79	0x1520		XY_BUILD
 	0x7a	0x3521		DSP_BUILD
-	0x7b	0x22a06		MULTIPLY_BUILD
+	0x7b	0x22206		MULTIPLY_BUILD
 	0x7c	0x3		SWAP_BUILD
 	0x7d	0x3		NORM_BUILD
 	0x7e	0x2		MINMAX_BUILD
@@ -26,8 +26,8 @@
 	0xc8	0x1000f02	FPU_BUILD
 	0xcb	0x2		BS_BUILD
 	0xcc	0x1988c02	AGU_BUILD
-	0xcd	0xa0101		DMAC_BUILD
-	0xf1	0x1		CORE_CONFIG
+	0xcd	0xa0102		DMAC_BUILD
+	0xf1	0x101		CORE_CONFIG
 	0xf3	0x13121601	IRQ_BUILD
 	0xf5	0x8080102	PCT_BUILD
 	0xf6	0x6f0004	CC_BUILD
@@ -81,6 +81,7 @@
 	-Xunaligned
 	-Xcode_density
 	-Xdiv_rem=radix2
+	-turbo_boost
 	-Xswap
 	-Xbitscan
 	-Xmpy_option=mpyd
@@ -151,6 +152,7 @@
 	nsim_isa_ad_option=1
 	nsim_isa_code_density_option=2
 	nsim_isa_div_rem_option=1
+	nsim_isa_turbo_boost=1
 	nsim_isa_swap_option=1
 	nsim_isa_bitscan_option=1
 	nsim_isa_mpy_option=8
@@ -219,6 +221,7 @@
 	processor.Xunaligned=1
 	processor.Xcode_density=1
 	processor.Xdiv_rem=radix2
+	processor.turbo_boost=1
 	processor.Xswap=1
 	processor.Xbitscan=1
 	processor.Xmpy_option=mpyd
@@ -277,9 +280,9 @@
 	processor.dmac_int_config=single_internal
 ]]></string>
   </configuration>
-  <configuration name="architect" filename="architect.txt">
+  <configuration name="architect" filename="build_configuration.txt">
     <string><![CDATA[
-######## em11d_2p3_em18_7 --- com.arc.templates.project.Empty.1_0 ########
+######## em11d_2p3_em_RC0 --- com.arc.templates.project.Empty.1_0 ########
 
 # BuildHTMLDocs --- Creates custom HTML documentation in the 'docs' directory.
 -build_html_docs false
@@ -389,7 +392,7 @@
 
 # mwdt_version --- Selects the MetaWare version to be used with the TCF file.
 # Change from the default to an older or newer toolset version if you want the TCF file to be used with an older or newer version of the MetaWare tools.
--mwdt_version K-2015.06
+-mwdt_version M-2016.12
 
 # code_base_addr ---
 # The base address to assign to the executable code segment in the linker command file when there is no ICCM in the build.  This value is ignored when there is an ICCM.
@@ -557,7 +560,7 @@
 -rgf_banked_regs 32
 
 # turbo_boost --- This enables the Turbo Boost synthesis option. By enabling this option, the achievable clock frequency is increased, but at the cost of an additional cycle latency on branch instructions.
--turbo_boost false
+-turbo_boost true
 
 # infer_alu_adder --- infer: datapath is described as behavioral code: A + B
 # instantiate: datapath is instantiated as a detailed multi-stage code of a carry-lookahead adder.  It is generally preferable to use the infer option and add directives for your target synthesizer.
@@ -583,7 +586,7 @@
 -voltage_domains false
 
 # mem_bus_option --- The core supports two bus protocols for accessing external memory: AHB & AHB-Lite. AHB-Lite-single means instruction fetch and data access share a single AHB-Lite port. AHB-Lite-dual means separate AHB-Lite port for each initiator if present.
--mem_bus_option AHB
+-mem_bus_option AHB-Lite-dual
 
 # mem_bus_reg_interface --- Specifies whether the memory bus interface is registered.
 -mem_bus_reg_interface true
@@ -747,7 +750,7 @@
 # secure_debug --- This enables secure debug feature
 -secure_debug false
 
-# scdbg_aux_unlk --- "inferred" option infers DSP datapath elements from verilog operators for better area and "optimized" option selects hardware for better timing
+# scdbg_aux_unlk --- An internal demo module will be included when enable
 -scdbg_aux_unlk false
 
 
@@ -1127,6 +1130,7 @@
 	.define	core_config_bcr_d_cache_build_u,0
 	.define	core_config_bcr_d_cache_build_cycles,0
 	.define	core_config_bcr_dccm_build,0x00010804
+	.define	core_config_bcr_dccm_build_w,0
 	.define	core_config_bcr_dccm_build_cycles,0
 	.define	core_config_bcr_dccm_build_interleave,1
 	.define	core_config_bcr_dccm_build_size1,0
@@ -1173,10 +1177,10 @@
 	.define	core_config_bcr_dsp_build_comp,1
 	.define	core_config_bcr_dsp_build_divsqrt,1
 	.define	core_config_bcr_dsp_build_version,33
-	.define	core_config_bcr_multiply_build,0x00022a06
+	.define	core_config_bcr_multiply_build,0x00022206
 	.define	core_config_bcr_multiply_build_version16x16,2
 	.define	core_config_bcr_multiply_build_dsp,2
-	.define	core_config_bcr_multiply_build_cyc,2
+	.define	core_config_bcr_multiply_build_cyc,0
 	.define	core_config_bcr_multiply_build_type,2
 	.define	core_config_bcr_multiply_build_version32x32,6
 	.define	core_config_bcr_swap_build,0x00000003
@@ -1189,7 +1193,10 @@
 	.define	core_config_bcr_barrel_build_version,3
 	.define	core_config_bcr_barrel_build_shift_option,3
 	.define	core_config_bcr_isa_config,0x12447402
+	.define	core_config_bcr_isa_config_res1,0
 	.define	core_config_bcr_isa_config_d,1
+	.define	core_config_bcr_isa_config_res2,0
+	.define	core_config_bcr_isa_config_f,0
 	.define	core_config_bcr_isa_config_c,2
 	.define	core_config_bcr_isa_config_l,0
 	.define	core_config_bcr_isa_config_n,1
@@ -1222,14 +1229,14 @@
 	.define	core_config_bcr_agu_build_num_offset,8
 	.define	core_config_bcr_agu_build_num_addr,12
 	.define	core_config_bcr_agu_build_version,2
-	.define	core_config_bcr_dmac_build,0x000a0101
+	.define	core_config_bcr_dmac_build,0x000a0102
 	.define	core_config_bcr_dmac_build_int_cfg,1
 	.define	core_config_bcr_dmac_build_fifo,1
 	.define	core_config_bcr_dmac_build_chan_mem,0
 	.define	core_config_bcr_dmac_build_channels,1
-	.define	core_config_bcr_dmac_build_version,1
-	.define	core_config_bcr_core_config,0x00000001
-	.define	core_config_bcr_core_config_turbo_boost,0
+	.define	core_config_bcr_dmac_build_version,2
+	.define	core_config_bcr_core_config,0x00000101
+	.define	core_config_bcr_core_config_turbo_boost,1
 	.define	core_config_bcr_core_config_version,1
 	.define	core_config_bcr_irq_build,0x13121601
 	.define	core_config_bcr_irq_build_raz,0
@@ -1268,6 +1275,7 @@
 	.define	core_config_code_density,1
 	.define	core_config_div_rem,"radix2"
 	.define	core_config_div_rem_radix2,1
+	.define	core_config_turbo_boost,1
 	.define	core_config_swap,1
 	.define	core_config_bitscan,1
 	.define	core_config_mpy_option,"mpyd"
@@ -1379,6 +1387,7 @@
 	#define	core_config_bcr_d_cache_build_u	0
 	#define	core_config_bcr_d_cache_build_cycles	0
 	#define	core_config_bcr_dccm_build	0x00010804
+	#define	core_config_bcr_dccm_build_w	0
 	#define	core_config_bcr_dccm_build_cycles	0
 	#define	core_config_bcr_dccm_build_interleave	1
 	#define	core_config_bcr_dccm_build_size1	0
@@ -1425,10 +1434,10 @@
 	#define	core_config_bcr_dsp_build_comp	1
 	#define	core_config_bcr_dsp_build_divsqrt	1
 	#define	core_config_bcr_dsp_build_version	33
-	#define	core_config_bcr_multiply_build	0x00022a06
+	#define	core_config_bcr_multiply_build	0x00022206
 	#define	core_config_bcr_multiply_build_version16x16	2
 	#define	core_config_bcr_multiply_build_dsp	2
-	#define	core_config_bcr_multiply_build_cyc	2
+	#define	core_config_bcr_multiply_build_cyc	0
 	#define	core_config_bcr_multiply_build_type	2
 	#define	core_config_bcr_multiply_build_version32x32	6
 	#define	core_config_bcr_swap_build	0x00000003
@@ -1441,7 +1450,10 @@
 	#define	core_config_bcr_barrel_build_version	3
 	#define	core_config_bcr_barrel_build_shift_option	3
 	#define	core_config_bcr_isa_config	0x12447402
+	#define	core_config_bcr_isa_config_res1	0
 	#define	core_config_bcr_isa_config_d	1
+	#define	core_config_bcr_isa_config_res2	0
+	#define	core_config_bcr_isa_config_f	0
 	#define	core_config_bcr_isa_config_c	2
 	#define	core_config_bcr_isa_config_l	0
 	#define	core_config_bcr_isa_config_n	1
@@ -1474,14 +1486,14 @@
 	#define	core_config_bcr_agu_build_num_offset	8
 	#define	core_config_bcr_agu_build_num_addr	12
 	#define	core_config_bcr_agu_build_version	2
-	#define	core_config_bcr_dmac_build	0x000a0101
+	#define	core_config_bcr_dmac_build	0x000a0102
 	#define	core_config_bcr_dmac_build_int_cfg	1
 	#define	core_config_bcr_dmac_build_fifo	1
 	#define	core_config_bcr_dmac_build_chan_mem	0
 	#define	core_config_bcr_dmac_build_channels	1
-	#define	core_config_bcr_dmac_build_version	1
-	#define	core_config_bcr_core_config	0x00000001
-	#define	core_config_bcr_core_config_turbo_boost	0
+	#define	core_config_bcr_dmac_build_version	2
+	#define	core_config_bcr_core_config	0x00000101
+	#define	core_config_bcr_core_config_turbo_boost	1
 	#define	core_config_bcr_core_config_version	1
 	#define	core_config_bcr_irq_build	0x13121601
 	#define	core_config_bcr_irq_build_raz	0
@@ -1520,6 +1532,7 @@
 	#define	core_config_code_density	1
 	#define	core_config_div_rem	"radix2"
 	#define	core_config_div_rem_radix2	1
+	#define	core_config_turbo_boost	1
 	#define	core_config_swap	1
 	#define	core_config_bitscan	1
 	#define	core_config_mpy_option	"mpyd"
@@ -1629,6 +1642,7 @@
 	core_config.bcr.d_cache_build.u=0
 	core_config.bcr.d_cache_build.cycles=0
 	core_config.bcr.dccm_build=0x00010804
+	core_config.bcr.dccm_build.w=0
 	core_config.bcr.dccm_build.cycles=0
 	core_config.bcr.dccm_build.interleave=1
 	core_config.bcr.dccm_build.size1=0
@@ -1675,10 +1689,10 @@
 	core_config.bcr.dsp_build.comp=1
 	core_config.bcr.dsp_build.divsqrt=1
 	core_config.bcr.dsp_build.version=33
-	core_config.bcr.multiply_build=0x00022a06
+	core_config.bcr.multiply_build=0x00022206
 	core_config.bcr.multiply_build.version16x16=2
 	core_config.bcr.multiply_build.dsp=2
-	core_config.bcr.multiply_build.cyc=2
+	core_config.bcr.multiply_build.cyc=0
 	core_config.bcr.multiply_build.type=2
 	core_config.bcr.multiply_build.version32x32=6
 	core_config.bcr.swap_build=0x00000003
@@ -1691,7 +1705,10 @@
 	core_config.bcr.barrel_build.version=3
 	core_config.bcr.barrel_build.shift_option=3
 	core_config.bcr.isa_config=0x12447402
+	core_config.bcr.isa_config.res1=0
 	core_config.bcr.isa_config.d=1
+	core_config.bcr.isa_config.res2=0
+	core_config.bcr.isa_config.f=0
 	core_config.bcr.isa_config.c=2
 	core_config.bcr.isa_config.l=0
 	core_config.bcr.isa_config.n=1
@@ -1724,14 +1741,14 @@
 	core_config.bcr.agu_build.num_offset=8
 	core_config.bcr.agu_build.num_addr=12
 	core_config.bcr.agu_build.version=2
-	core_config.bcr.dmac_build=0x000a0101
+	core_config.bcr.dmac_build=0x000a0102
 	core_config.bcr.dmac_build.int_cfg=1
 	core_config.bcr.dmac_build.fifo=1
 	core_config.bcr.dmac_build.chan_mem=0
 	core_config.bcr.dmac_build.channels=1
-	core_config.bcr.dmac_build.version=1
-	core_config.bcr.core_config=0x00000001
-	core_config.bcr.core_config.turbo_boost=0
+	core_config.bcr.dmac_build.version=2
+	core_config.bcr.core_config=0x00000101
+	core_config.bcr.core_config.turbo_boost=1
 	core_config.bcr.core_config.version=1
 	core_config.bcr.irq_build=0x13121601
 	core_config.bcr.irq_build.raz=0
@@ -1770,6 +1787,7 @@
 	core_config.code_density=1
 	core_config.div_rem=radix2
 	core_config.div_rem_radix2=1
+	core_config.turbo_boost=1
 	core_config.swap=1
 	core_config.bitscan=1
 	core_config.mpy_option=mpyd
@@ -1881,14 +1899,14 @@ MEMORY {
     DMP     : ORIGIN = 0xf0000000, LENGTH = 0x10000000
     }
 SECTIONS {
-    GROUP: {
+    GROUP BLOCK(4): {
         .vectors (TEXT) SIZE(DEFINED _IVTSIZE?_IVTSIZE:224): {}
 	.text? : { *('.text$crt*') }
         * (TEXT): {}
     	* (LIT): {}
 	} > ICCM0
 
-    GROUP: {
+    GROUP BLOCK(4): {
 	/* _SDA_BASE_ computed implicitly */
         .sdata?: {}
         .sbss?: {}
@@ -1897,10 +1915,10 @@ SECTIONS {
        .stack ALIGN(4) SIZE(DEFINED _STACKSIZE?_STACKSIZE:65536): {}
        .heap? ALIGN(4) SIZE(DEFINED _HEAPSIZE?_HEAPSIZE:0): {}
 	} > SYSTEM1
-    GROUP: {
+    GROUP BLOCK(4): {
         .Xdata? : {}
         } > DCCM
-    GROUP: {
+    GROUP BLOCK(4): {
         .Ydata? : {}
         } > YCCM
     }
