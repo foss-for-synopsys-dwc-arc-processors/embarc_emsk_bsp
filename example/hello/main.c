@@ -78,10 +78,9 @@ int main(void) {
 	EMBARC_PRINTF("!!!Hello World!!!\r\n"); /* prints !!!Hello World!!! */
 
 	while(1) {
+		EMBARC_PRINTF("Toggle onboard LEDs.\r\n");
 		led_write(led_toggle_val, BOARD_LED_MASK);
 		led_toggle_val = ~led_toggle_val;
-		EMBARC_PRINTF("The onboard LED is turned.\r\n");
-
 		board_delay_ms(1000, 0);
 	}
 
