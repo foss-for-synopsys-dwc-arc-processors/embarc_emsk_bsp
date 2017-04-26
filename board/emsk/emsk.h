@@ -50,6 +50,7 @@
 #include "board/emsk/gpio/dw_gpio_obj.h"
 #include "board/emsk/gpio/emsk_gpio.h"
 #include "board/emsk/iic/dw_iic_obj.h"
+#include "board/emsk/spi/dw_spi_obj.h"
 
 #include "board/emsk/common/emsk_timer.h"
 

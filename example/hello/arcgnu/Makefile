@@ -60,15 +60,18 @@ OPENOCD_OPTIONS  = -s $(OPENOCD_SCRIPT_ROOT) -f $(OPENOCD_CFG_FILE)
 EMBARC_EMSK_BSP_ROOT = $(EMBARC_BSP_ROOT)/board/emsk
 
 EMBARC_EMSK_BSP_CSRC_DIRS = $(EMBARC_EMSK_BSP_ROOT)/common \
-			$(EMBARC_EMSK_BSP_ROOT)/gpio $(EMBARC_EMSK_BSP_ROOT)/uart $(EMBARC_EMSK_BSP_ROOT)/iic
+				$(EMBARC_EMSK_BSP_ROOT)/gpio \
+				$(EMBARC_EMSK_BSP_ROOT)/iic \
+				$(EMBARC_EMSK_BSP_ROOT)/spi \
+				$(EMBARC_EMSK_BSP_ROOT)/uart
 
 EMBARC_BSP_CSRC_DIRS = $(EMBARC_BSP_ROOT)/arc/startup $(EMBARC_BSP_ROOT)/arc \
 			$(EMBARC_BSP_ROOT)/board $(EMBARC_EMSK_BSP_CSRC_DIRS) \
 			$(EMBARC_BSP_ROOT)/device/designware/gpio \
-			$(EMBARC_BSP_ROOT)/device/designware/iic  \
+			$(EMBARC_BSP_ROOT)/device/designware/iic \
+			$(EMBARC_BSP_ROOT)/device/designware/spi \
 			$(EMBARC_BSP_ROOT)/device/designware/uart \
 			$(EMBARC_BSP_ROOT)/common
-
 
 EMBARC_BSP_ASMSRC_DIRS = $(EMBARC_BSP_ROOT)/arc/startup $(EMBARC_BSP_ROOT)/arc
 EMBARC_BSP_INC_DIRS = $(EMBARC_BSP_ROOT)
