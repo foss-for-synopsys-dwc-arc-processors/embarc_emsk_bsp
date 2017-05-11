@@ -26,8 +26,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2017-04-26
+ * \version 2017.05
+ * \date 2017-05-08
  * \author Qiang Gu(Qiang.Gu@synopsys.com)
 --------------------------------------------- */
 
@@ -47,8 +47,11 @@
 #define _ARC_DSP_INSTR_MW_H_
 
 #include "arc_core_config.h"
+#include "inc/embARC_toolchain.h"
 
-/** Support for ARC EM DSP instructions */
+/** Support for ARC EM DSP instructions
+ *  For the ARC EM family only
+ */
 #if !defined(ARC_FEATURE_DSP2)
 #if defined(core_config_dsp2) && core_config_dsp2 == 1
 #define ARC_FEATURE_DSP2		1
@@ -59,10 +62,126 @@
 extern "C" {
 #endif
 
+#if defined (__MW__) && _ARCVER >= 0x42
+
 #if defined(ARC_FEATURE_DSP2) && ARC_FEATURE_DSP2 == 1
-int32_t _adds    (int32_t, int32_t);
+/**
+ * Basic saturating arithmetic functions
+ */
+
+/**
+ * \brief  Sature a 32-bit value to 16-bit value.
+ * \param[in] int operand
+ * \return int b = SAT16(c)
+ */
+#define _arc_sath(a)			_sath(a)
+extern int _sath(int);
+#pragma intrinsic(_sath, name => "sath", flags=> "znv");
+
+/**
+ * \brief  Round and sature a 32-bit value to 16-bit value.
+ * \param[in] int operand
+ * \return int b = SAT16(RND16(c))
+ */
+#define _arc_rndh(a)			_rndh(a)
+extern int _rndh(int);
+#pragma intrinsic(_rndh, name => "rndh", flags=> "znv");
+
+/**
+ * \brief  Compute the absolute value of a 16-bit element and saturate the result.
+ * \param[in] int operand
+ * \return int b = SAT16(ABS(c.h0))
+ */
+#define _arc_abssh(a)			_abssh(a)
+extern int _abssh(int);
+#pragma intrinsic(_abssh, name => "abssh");
+
+/**
+ * \brief  Compute the absolute value of a 32-bit operand and saturate the result.
+ * \param[in] int operand
+ * \return int b = SAT32(ABS(c))
+ */
+#define _arc_abss(a)			_abss(a)
+extern int _abss(int);
+#pragma intrinsic(_abss, name => "abss");
+
+/**
+ * \brief  Negate the lower 16 bits of a word and saturate the result.
+ * \param[in] int operand
+ * \return int b = SAT16(-c)
+ */
+#define _arc_negsh(a)			_negsh(a)
+extern int _negsh(int);
+#pragma intrinsic(_negsh, name => "negsh", flags=>"znv");
+
+/**
+ * \brief  Negate a 32-bit word and saturate the result.
+ * \param[in] int operand
+ * \return int b = SAT32(-c)
+ */
+#define _arc_negs(a)			_negs(a)
+extern int _negs(int);
+#pragma intrinsic(_negs, name => "negs");
+
+/**
+ * \brief  Signed 32-bit addtion. The result is saturated.
+ * \param[in] int operand
+ * \param[in] int operand
+ * \return int a = SAT32(b + c)
+ */
+#define _arc_adds(a, b)			_adds(a, b)
+extern int _adds(int, int);
 #pragma intrinsic(_adds, name => "adds");
-#endif
+
+/**
+ * \brief  Signed 32-bit subtraction. The result is saturated.
+ * \param[in] int operand
+ * \param[in] int operand
+ * \return int a = SAT32(b – c)
+ */
+#define _arc_subs(a, b)			_subs(a, b)
+extern int _subs(int, int);
+#pragma intrinsic(_subs, name => "subs");
+
+/**
+ * \brief  Perform an arithmetic shift left operation on an operand.
+           The shift amount is specified in the second operand.
+           Store the saturated result in the destination register.
+ * \param[in] int operand
+ * \param[in] int operand
+ * \return int a = c >= 0 ? SAT32(b << c) : b >> -c
+ */
+#define _arc_asls(a, b)			_asls(a, b)
+extern int _asls(int, int);
+#pragma intrinsic(_asls, name => "asls");
+
+/**
+ * \brief  Perform an arithmetic shift right operation on an operand.
+           The shift amount is specified in the second operand.
+           Store the saturated result in the destination register.
+ * \param[in] int operand
+ * \param[in] int operand
+ * \return int a = c > =0 ? b >> c : SAT32( b<< -c)
+ */
+#define _arc_asrs(a, b)			_asrs(a, b)
+extern int _asrs(int, int);
+#pragma intrinsic(_asrs, name => "asrs");
+
+/**
+ * \brief  Perform an arithmetic shift right operation on an operand.
+           The shift amount is specified in the second operand.
+           Store the rounded and saturated result in the destination register.
+ * \param[in] int operand
+ * \param[in] int operand
+ * \return int a = c >= 0 ? RND32(b >> c) : SAT32(b << -c)
+ */
+#define _arc_asrsr(a, b)			_asrsr(a, b)
+extern int _asrsr(int,int);
+#pragma intrinsic(_asrsr, name => "asrsr", flags=> "znv");
+
+#endif /* ARC_FEATURE_DSP2 */
+
+#endif /* __MW__ */
 
 #ifdef __cplusplus
 }

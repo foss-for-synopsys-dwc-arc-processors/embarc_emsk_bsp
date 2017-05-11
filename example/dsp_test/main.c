@@ -70,15 +70,21 @@
 #include "inc/embARC_debug.h"
 #include "inc/dsp/arc_dsp_instr_mw.h"
 
-int main(void) {
+int main(void)
+{
+	/* Basic saturating arithmetic operations */
+	EMBARC_PRINTF("_arc_sath(32768) = %d\r\n", _arc_sath(32768));
+	EMBARC_PRINTF("_arc_rndh(32767) = %d\r\n", _arc_rndh(32767));
+	EMBARC_PRINTF("_arc_abssh(-32769) = %d\r\n", _arc_abssh(-32769));
+	EMBARC_PRINTF("_arc_abss(-32769) = %d\r\n", _arc_abss(-32769));
+	EMBARC_PRINTF("_arc_negsh(32767) = %d\r\n", _arc_negsh(32767));
+	EMBARC_PRINTF("_arc_negs(32769) = %d\r\n", _arc_negs(32769));
+	EMBARC_PRINTF("_arc_adds(10, -51) = %d\r\n",_arc_adds(10, -51));
+	EMBARC_PRINTF("_arc_subs(10, -51) = %d\r\n",_arc_subs(10, -51));
+	EMBARC_PRINTF("_arc_asls(10, -1) = %d\r\n",_arc_asls(10, -1));
+	EMBARC_PRINTF("_arc_asrs(-3, 1) = %d\r\n",_arc_asrs(-3, 1));
+	EMBARC_PRINTF("_arc_asrsr(-3, 1) = %d\r\n",_arc_asrsr(-3, 1));
 
-	int32_t a = 10;
-	int32_t b = 51;
-	int32_t c = 0;
-
-	c = _adds(a, b);
-
-	EMBARC_PRINTF("c = %d", c);
 	EMBARC_PRINTF("!!!Hello World!!!\r\n"); /* prints !!!Hello World!!! */
 
 	return EXIT_SUCCESS;
