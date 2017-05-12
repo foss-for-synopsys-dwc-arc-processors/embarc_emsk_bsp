@@ -74,7 +74,7 @@ extern "C" {
  * \param[in] int operand
  * \return int b = SAT16(c)
  */
-#define _arc_sath(a)			_sath(a)
+#define _arc_sath(c)			_sath(c)
 extern int _sath(int);
 #pragma intrinsic(_sath, name => "sath", flags=> "znv");
 
@@ -83,7 +83,7 @@ extern int _sath(int);
  * \param[in] int operand
  * \return int b = SAT16(RND16(c))
  */
-#define _arc_rndh(a)			_rndh(a)
+#define _arc_rndh(c)			_rndh(c)
 extern int _rndh(int);
 #pragma intrinsic(_rndh, name => "rndh", flags=> "znv");
 
@@ -92,7 +92,7 @@ extern int _rndh(int);
  * \param[in] int operand
  * \return int b = SAT16(ABS(c.h0))
  */
-#define _arc_abssh(a)			_abssh(a)
+#define _arc_abssh(c)			_abssh(c)
 extern int _abssh(int);
 #pragma intrinsic(_abssh, name => "abssh");
 
@@ -101,7 +101,7 @@ extern int _abssh(int);
  * \param[in] int operand
  * \return int b = SAT32(ABS(c))
  */
-#define _arc_abss(a)			_abss(a)
+#define _arc_abss(c)			_abss(c)
 extern int _abss(int);
 #pragma intrinsic(_abss, name => "abss");
 
@@ -110,7 +110,7 @@ extern int _abss(int);
  * \param[in] int operand
  * \return int b = SAT16(-c)
  */
-#define _arc_negsh(a)			_negsh(a)
+#define _arc_negsh(c)			_negsh(c)
 extern int _negsh(int);
 #pragma intrinsic(_negsh, name => "negsh", flags=>"znv");
 
@@ -119,7 +119,7 @@ extern int _negsh(int);
  * \param[in] int operand
  * \return int b = SAT32(-c)
  */
-#define _arc_negs(a)			_negs(a)
+#define _arc_negs(c)			_negs(c)
 extern int _negs(int);
 #pragma intrinsic(_negs, name => "negs");
 
@@ -129,7 +129,7 @@ extern int _negs(int);
  * \param[in] int operand
  * \return int a = SAT32(b + c)
  */
-#define _arc_adds(a, b)			_adds(a, b)
+#define _arc_adds(b, c)			_adds(b, c)
 extern int _adds(int, int);
 #pragma intrinsic(_adds, name => "adds");
 
@@ -139,7 +139,7 @@ extern int _adds(int, int);
  * \param[in] int operand
  * \return int a = SAT32(b – c)
  */
-#define _arc_subs(a, b)			_subs(a, b)
+#define _arc_subs(b, c)			_subs(b, c)
 extern int _subs(int, int);
 #pragma intrinsic(_subs, name => "subs");
 
@@ -151,7 +151,7 @@ extern int _subs(int, int);
  * \param[in] int operand
  * \return int a = c >= 0 ? SAT32(b << c) : b >> -c
  */
-#define _arc_asls(a, b)			_asls(a, b)
+#define _arc_asls(b, c)			_asls(b, c)
 extern int _asls(int, int);
 #pragma intrinsic(_asls, name => "asls");
 
@@ -163,7 +163,7 @@ extern int _asls(int, int);
  * \param[in] int operand
  * \return int a = c > =0 ? b >> c : SAT32( b<< -c)
  */
-#define _arc_asrs(a, b)			_asrs(a, b)
+#define _arc_asrs(b, c)			_asrs(b, c)
 extern int _asrs(int, int);
 #pragma intrinsic(_asrs, name => "asrs");
 
@@ -175,7 +175,7 @@ extern int _asrs(int, int);
  * \param[in] int operand
  * \return int a = c >= 0 ? RND32(b >> c) : SAT32(b << -c)
  */
-#define _arc_asrsr(a, b)			_asrsr(a, b)
+#define _arc_asrsr(b, c)			_asrsr(b, c)
 extern int _asrsr(int,int);
 #pragma intrinsic(_asrsr, name => "asrsr", flags=> "znv");
 
@@ -195,7 +195,7 @@ extern int _asrsr(int,int);
  * \return unsigned a
  */
 #define _arc_valgn2h(b, c)			_valgn2h(b, c)
-extern unsigned _valgn2h(unsigned,unsigned);
+extern unsigned _valgn2h(unsigned, unsigned);
 #pragma intrinsic(_valgn2h, name => "valgn2h");
 
 /**
@@ -233,7 +233,7 @@ extern unsigned _vrep2hm(unsigned);
  * \return unsigned b
  */
 #define _arc_vext2bhl(c)			_vext2bhl(c)
-extern unsigned _vext2bhl(unsigned,unsigned);
+extern unsigned _vext2bhl(unsigned);
 #pragma intrinsic(_vext2bhl, name => "vext2bhl");
 
 #endif /* ARC_FEATURE_DSP2 */
