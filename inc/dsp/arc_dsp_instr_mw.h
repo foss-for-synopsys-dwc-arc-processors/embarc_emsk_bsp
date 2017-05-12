@@ -66,7 +66,7 @@ extern "C" {
 
 #if defined(ARC_FEATURE_DSP2) && ARC_FEATURE_DSP2 == 1
 /**
- * Basic saturating arithmetic functions
+ * Basic saturating arithmetic operations
  */
 
 /**
@@ -178,6 +178,63 @@ extern int _asrs(int, int);
 #define _arc_asrsr(a, b)			_asrsr(a, b)
 extern int _asrsr(int,int);
 #pragma intrinsic(_asrsr, name => "asrsr", flags=> "znv");
+
+/**
+ * Vector unpacking operations
+ */
+
+/**
+ * \brief  Two-way 16-bit vector addition and subtraction.
+ 	   The results are saturated and stored.
+ 	   if (cc) {
+		a.h0 = SAT16(b.h0 + c.h0);
+		a.h1 = SAT16(b.h1 - c.h1);
+	   }
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_valgn2h(b, c)			_valgn2h(b, c)
+extern unsigned _valgn2h(unsigned,unsigned);
+#pragma intrinsic(_valgn2h, name => "valgn2h");
+
+/**
+ * \brief  Compose a dual 16-bit vector by replicating
+ 	   the least-significant 16 bits of an operand.
+		b.h1 = c.h0;
+		b.h0 = c.h0;
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vrep2hl(c)				_vrep2hl(c)
+extern unsigned _vrep2hl(unsigned);
+#pragma intrinsic(_vrep2hl, name => "vrep2hl");
+
+/**
+ * \brief  Compose a dual 16-bit vector by replicating
+ 	   the most-significant 16 bits of an operand.
+		b.h1 = c.h1;
+		b.h0 = c.h1;
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vrep2hm(c)				_vrep2hm(c)
+extern unsigned _vrep2hm(unsigned);
+#pragma intrinsic(_vrep2hm, name => "vrep2hm");
+
+/**
+ * \brief  Compose a dual 16-bit vector by zero-extending
+ 	   lower two bytes of an operand.
+		b.b3 = 0;
+		b.b2 = c.b1;
+		b.b1 = 0;
+		b.b0 = c.b0;
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vext2bhl(c)			_vext2bhl(c)
+extern unsigned _vext2bhl(unsigned,unsigned);
+#pragma intrinsic(_vext2bhl, name => "vext2bhl");
 
 #endif /* ARC_FEATURE_DSP2 */
 
