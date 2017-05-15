@@ -236,6 +236,45 @@ extern unsigned _vrep2hm(unsigned);
 extern unsigned _vext2bhl(unsigned);
 #pragma intrinsic(_vext2bhl, name => "vext2bhl");
 
+/**
+ * \brief  Compose a dual 16-bit vector by zero-extending
+ 	   higher two bytes of an operand.
+		b.b3 = 0;
+		b.b2 = c.b3;
+		b.b1 = 0;
+		b.b0 = c.b2;
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vext2bhm(c)			_vext2bhm(c)
+extern unsigned _vext2bhm(unsigned);
+#pragma intrinsic(_vext2bhm, name => "vext2bhm");
+
+/**
+ * \brief  Compose a dual 16-bit vector by sign-extending
+ 	   lower two bytes of an operand.
+		b.h1 = sext(c.b1);
+		b.h0 = sext(c.b0);
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vsext2bhl(c)			_vsext2bhl(c)
+extern unsigned _vsext2bhl(unsigned);
+#pragma intrinsic(_vsext2bhl, name => "vsext2bhl");
+
+/**
+ * \brief  Compose a dual 16-bit vector by sign-extending
+ 	   higher two bytes of an operand.
+		b.h1 = sext(c.b3);
+		b.h0 = sext(c.b2);
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vsext2bhm(c)			_vsext2bhm(c)
+extern unsigned _vsext2bhm(unsigned);
+#pragma intrinsic(_vsext2bhm, name => "vsext2bhm");
+
+
 #endif /* ARC_FEATURE_DSP2 */
 
 #endif /* __MW__ */
