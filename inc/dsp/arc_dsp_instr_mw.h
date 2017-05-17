@@ -186,10 +186,10 @@ extern int _asrsr(int,int);
 /**
  * \brief  Two-way 16-bit vector addition and subtraction.
  	   The results are saturated and stored.
- 	   if (cc) {
-		a.h0 = SAT16(b.h0 + c.h0);
-		a.h1 = SAT16(b.h1 - c.h1);
-	   }
+		if (cc) {
+			a.h0 = SAT16(b.h0 + c.h0);
+			a.h1 = SAT16(b.h1 - c.h1);
+		}
  * \param[in] unsigned b
  * \param[in] unsigned c
  * \return unsigned a
@@ -274,6 +274,264 @@ extern unsigned _vsext2bhl(unsigned);
 extern unsigned _vsext2bhm(unsigned);
 #pragma intrinsic(_vsext2bhm, name => "vsext2bhm");
 
+/**
+ * Vector ALU operations
+ */
+
+/**
+ * \brief  Dual 16-bit SIMD addition.
+		if (cc) {
+			a.h0 = b.h0 + c.h0;
+			a.h1 = b.h1 + c.h1;
+		}
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vadd2h(b, c)			_vadd2h(b, c)
+extern unsigned _vadd2h(unsigned, unsigned);
+#pragma intrinsic(_vadd2h, name => "vadd2h");
+
+/**
+ * \brief  Two-way 16-bit vector addition.
+		a.h1 = SAT16(b.h1+c.h1);
+		a.h0 = SAT16(b.h0+c.h0);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vadds2h(b, c)			_vadds2h(b, c)
+extern unsigned _vadds2h(unsigned, unsigned);
+#pragma intrinsic(_vadds2h, name => "vadds2h");
+
+/**
+ * \brief  Two-way 16-bit vector subtraction.
+		if (cc) {
+			a.h0 = b.h0 - c.h0;
+			a.h1 = b.h1 - c.h1;
+		}
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vsub2h(b, c)			_vsub2h(b, c)
+extern unsigned _vsub2h(unsigned, unsigned);
+#pragma intrinsic(_vsub2h, name => "vsub2h");
+
+/**
+ * \brief  Dual 16-bit vector subtraction. The result is saturated.
+		if (cc) {
+			a.h0 = SAT16(b.h0 - c.h0);
+			a.h1 = SAT16(b.h1 - c.h1);
+		}
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vsubs2h(b, c)			_vsubs2h(b, c)
+extern unsigned _vsubs2h(unsigned, unsigned);
+#pragma intrinsic(_vsubs2h, name => "vsubs2h");
+
+/**
+ * \brief  Dual 16-bit vector subtraction and addition.
+		if (cc) {
+			a.h0 = b.h0 - c.h0;
+			a.h1 = b.h1 + c.h1;
+		}
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vsubadd2h(b, c)			_vsubadd2h(b, c)
+extern unsigned _vsubadd2h(unsigned, unsigned);
+#pragma intrinsic(_vsubadd2h, name => "vsubadd2h");
+
+/**
+ * \brief  Dual 16-bit vector subtraction and addition.
+ 	   The results are saturated.
+		if (cc) {
+			a.h0 = SAT16(b.h0 - c.h0);
+			a.h1 = SAT16(b.h1 + c.h1);
+		}
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vsubadds2h(b, c)			_vsubadds2h(b, c)
+extern unsigned _vsubadds2h(unsigned, unsigned);
+#pragma intrinsic(_vsubadds2h, name => "vsubadds2h");
+
+/**
+ * \brief  Perform a two-way arithmetic shift left operation 16-bit vectors.
+ 	   The shift amount is specified in the second operand.
+		a.h1 = b.h1 << c.h1;
+		a.h0 = b.h0 << c.h0;
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vasl2h(b, c)			_vasl2h(b, c)
+extern unsigned _vasl2h(unsigned, unsigned);
+#pragma intrinsic(_vasl2h, name => "vasl2h");
+
+/**
+ * \brief  Two-way 16-bit vector arithmetic shift left and store
+ 	   the saturated result.
+		a.h1 = SAT16(b.h1 << c.h1);
+		a.h0 = SAT16(b.h0 << c.h0);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vasls2h(b, c)			_vasls2h(b, c)
+extern unsigned _vasls2h(unsigned, unsigned);
+#pragma intrinsic(_vasls2h, name => "vasls2h");
+
+/**
+ * \brief  Perform a two-way arithmetic shift right operation on 16-bit vectors.
+ 	   The shift amount is specified in the second operand.
+		a.h1 = b.h1 >> c.h1;
+		a.h0 = b.h0 >> c.h0;
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vasr2h(b, c)			_vasr2h(b, c)
+extern unsigned _vasr2h(unsigned, unsigned);
+#pragma intrinsic(_vasr2h, name => "vasr2h");
+
+/**
+ * \brief  Perform a two-way arithmetic shift right operation on 16-bit vectors.
+ 	   The result is saturated.
+		a.h1 = SAT16(b.h1 >> c.h1);
+		a.h0 = SAT16(b.h0 >> c.h0);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vasrs2h(b, c)			_vasrs2h(b, c)
+extern unsigned _vasrs2h(unsigned, unsigned);
+#pragma intrinsic(_vasrs2h, name => "vasrs2h");
+
+/**
+ * \brief  Perform a two-way logical shift right operation on 16-bit vectors.
+ 		a.h1 = unsigned (b.h1) >> c.h1;
+		a.h0 = unsigned (b.h0) >> c.h0;
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vlsr2h(b, c)			_vlsr2h(b, c)
+extern unsigned _vlsr2h(unsigned, unsigned);
+#pragma intrinsic(_vlsr2h, name => "vlsr2h");
+
+/**
+ * \brief  Perform a two-way arithmetic shift right operation on 16-bit vectors.
+ 	   The result is rounded and saturated.
+ 		a.h1 = SAT16(RND16(b.h1 >> c.h1));
+		a.h0 = SAT16(RND16(b.h0 >> c.h0));
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vasrsr2h(b, c)			_vasrsr2h(b, c)
+extern unsigned _vasrsr2h(unsigned, unsigned);
+#pragma intrinsic(_vasrsr2h, name => "vasrsr2h");
+
+/**
+ * \brief  Compare two-way 16-bit vectors and return the maximum.
+ 		a.h1 = max(b.h1, c.h1);
+		a.h0 = max(b.h0, c.h0);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmax2h(b, c)			_vmax2h(b, c)
+extern unsigned _vmax2h(unsigned, unsigned);
+#pragma intrinsic(_vmax2h, name => "vmax2h");
+
+/**
+ * \brief  Four-way eight-bit vector subtraction.
+ 		a.b3 = b.b3 - c.b3;
+		a.b2 = b.b2 - c.b2;
+		a.b1 = b.b1 - c.b1;
+		a.b0 = b.b0 - c.b0;
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vsub4b(b, c)			_vsub4b(b, c)
+extern unsigned _vsub4b(unsigned, unsigned);
+#pragma intrinsic(_vsub4b, name => "vsub4b");
+
+/**
+ * \brief  Compare two-way 16-bit signed vectors and return the minimum.
+ 		a.h1 = min(b.h1, c.h1);
+		a.h0 = min(b.h0, c.h0);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmin2h(b, c)			_vmin2h(b, c)
+extern unsigned _vmin2h(unsigned, unsigned);
+#pragma intrinsic(_vmin2h, name => "vmin2h");
+
+/**
+ * \brief  Absolute value of a two-way 16-bit vector.
+		b.h1 = ABS(c.h1);
+		b.h0 = ABS(c.b0);
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vabs2h(c)				_vabs2h(c)
+extern unsigned _vabs2h(unsigned);
+#pragma intrinsic(_vabs2h, name => "vabs2h");
+
+/**
+ * \brief  Saturated absolute value of a two-way 16-bit vector.
+		b.h1 = SAT16(ABS(c.h1));
+		b.h0 = SAT16(ABS(c.b0));
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vabss2h(c)				_vabss2h(c)
+extern unsigned _vabss2h(unsigned);
+#pragma intrinsic(_vabss2h, name => "vabss2h");
+
+/**
+ * \brief  Negate the two 16-bit vectors of an operand
+ 	   and store the negated value in the destination operand.
+		b.h1 = -c.h1;
+		b.h0 = -c.h0;
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vneg2h(c)				_vneg2h(c)
+extern unsigned _vneg2h(unsigned);
+#pragma intrinsic(_vneg2h, name => "vneg2h");
+
+/**
+ * \brief  Negate the two 16-bit vectors of an operand
+ 	   and store the saturated negated value in the destination operand.
+		b.h1 = SAT16(-c.h1);
+		b.h0 = SAT16(-c.h0);
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vnegs2h(c)				_vnegs2h(c)
+extern unsigned _vnegs2h(unsigned);
+#pragma intrinsic(_vnegs2h, name => "vnegs2h")
+
+/**
+ * \brief  Two-way 16-bit vector normalization.
+		b.h1 = norm(c.h1);
+		b.h0 = norm(c.h0);
+ * \param[in] unsigned c
+ * \return unsigned b
+ */
+#define _arc_vnorm2h(c)				_vnorm2h(c)
+extern unsigned _vnorm2h(unsigned);
+#pragma intrinsic(_vnorm2h, name => "vnorm2h")
 
 #endif /* ARC_FEATURE_DSP2 */
 
