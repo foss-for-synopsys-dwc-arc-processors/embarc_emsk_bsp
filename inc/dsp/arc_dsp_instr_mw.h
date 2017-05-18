@@ -479,7 +479,7 @@ extern unsigned _vmin2h(unsigned, unsigned);
 /**
  * \brief  Absolute value of a two-way 16-bit vector.
 		b.h1 = ABS(c.h1);
-		b.h0 = ABS(c.b0);
+		b.h0 = ABS(c.h0);
  * \param[in] unsigned c
  * \return unsigned b
  */
@@ -490,7 +490,7 @@ extern unsigned _vabs2h(unsigned);
 /**
  * \brief  Saturated absolute value of a two-way 16-bit vector.
 		b.h1 = SAT16(ABS(c.h1));
-		b.h0 = SAT16(ABS(c.b0));
+		b.h0 = SAT16(ABS(c.h0));
  * \param[in] unsigned c
  * \return unsigned b
  */
@@ -520,7 +520,7 @@ extern unsigned _vneg2h(unsigned);
  */
 #define _arc_vnegs2h(c)				_vnegs2h(c)
 extern unsigned _vnegs2h(unsigned);
-#pragma intrinsic(_vnegs2h, name => "vnegs2h")
+#pragma intrinsic(_vnegs2h, name => "vnegs2h");
 
 /**
  * \brief  Two-way 16-bit vector normalization.
@@ -531,7 +531,201 @@ extern unsigned _vnegs2h(unsigned);
  */
 #define _arc_vnorm2h(c)				_vnorm2h(c)
 extern unsigned _vnorm2h(unsigned);
-#pragma intrinsic(_vnorm2h, name => "vnorm2h")
+#pragma intrinsic(_vnorm2h, name => "vnorm2h");
+
+/**
+ * Accumulator operations
+ */
+
+/**
+ * \brief  Perform an arithmetic shift of the accumulator.
+		switch (c.b1) {
+			0: accwide = accwide << c.b0;
+			1: acclo = acclo << c.b0;
+			2: acchi = acchi << c.b0;
+			3: acchi = acchi << c.b2; acclo = acclo << c.b0;
+		}
+ * \param[in] int c
+ */
+#define _arc_aslacc(c)				_aslacc(c)
+extern void _aslacc(int);
+#pragma intrinsic(_aslacc, name => "aslacc" __ACC_RW_EFFECTS);
+
+/**
+ * \brief  Perform an arithmetic shift of the accumulator.
+		if (DSP_CTRL.GE) {
+			switch (c.b1) {
+			0: accwide = SAT72(accwide << c.b0);
+			1: acclo = SAT40(acclo << c.b0);
+			2: acchi = SAT40(acchi << c.b0);
+			3: acchi = SAT40(acchi << c.b2); acclo = SAT40(acclo << c.b0);
+		} else {
+			switch (c.b1) {
+			0: accwide = SAT64(accwide << c.b0);
+			1: acclo = SAT32(acclo << c.b0);
+			2: acchi = SAT32(acchi << c.b0);
+			3: acchi = SAT32(acchi << c.b2); acclo = SAT32(acclo << c.b0);
+		}
+ * \param[in] int c
+ */
+#define _arc_aslsacc(c)				_aslsacc(c)
+extern void _aslsacc(int);
+#pragma intrinsic(_aslsacc, name => "aslsacc" __ACC_RW_EFFECTS);
+
+/**
+ * \brief  Copy accumulator flags to the STATUS32 register.
+		switch (c.b1) {
+			0,2,3: STATUS32.ZNCV = ACC0_GHI.ZNCV;
+			1: STATUS32.ZNCV = ACC0_GLO.ZNCV;
+		}
+ * \param[in] int c
+ */
+#define _arc_flagacc(c)				_flagacc(c)
+extern void _flagacc(int c);
+#pragma intrinsic(_flagacc, name=>"flagacc", assume_volatile=>1, \
+	effects=>"%status:is_written;%acc0_glo:is_read;%acc0_ghi:is_read");
+
+/**
+ * \brief  Set the accumulator value.
+		if (c & 0x1) {
+			switch (c.b1) {
+				0: accwide = (int) b;
+				1: acclo = (int) b;
+				2: acchi = (int) b;
+				3: acchi = (int) b; acclo = (int) b;
+				4: accwide = (fract) b;
+				5: acclo = (fract) b;
+				6: acchi = (fract) b;
+				7: acclo = (fract) b; acchi = (fract) b;
+				8: accwide = (unsigned) b;
+				9: acclo = (unsigned) b;
+				10: acchi = (unsigned) b;
+				11: acclo = (unsigned) b; acchi = (unsigned) b;
+			}
+		}
+		else {
+			switch (c.b1) {
+				0: ACC0_LO = b;
+				1: ACC0_HI = b;
+				2: ACC0_GLO.GUARD = b;
+				3: ACC0_GHI.GUARD = b;
+			}
+		}
+ * \param[in] int b
+ * \param[in] int c
+ * \return int a
+ */
+#define _arc_setacc(b, c)			_setacc(b, c)
+extern int _setacc(int, int);
+#pragma intrinsic(_setacc, name=> "setacc" __ACC_W_EFFECTS);
+
+/**
+ * \brief  Get the accumulator value.
+		b = shift_round_sat(acc, c);
+ * \param[in] int c
+ * \return int b
+ */
+#define _arc_getacc(c)				_getacc(c)
+extern int _getacc(int);
+#pragma intrinsic(_getacc, name=> "getacc" __ACC_R_EFFECTS);
+
+/**
+ * \brief  Get the accumulator value.
+		switch (c.b1) {
+			0: b.b0 = norm(accwide);
+			1: b.b0 = norm(acclo);
+			2: b.b0 = norm(acchi);
+			3: b.b2 = norm(acchi); b.b0 = norm(acclo);
+		}
+ * \param[in] int c
+ * \return int b
+ */
+#define _arc_normacc(c)				_normacc(c)
+extern int _normacc(int);
+#pragma intrinsic(_normacc, name=> "normacc" __ACC_R_EFFECT);
+
+/**
+ * Vector 16x16 MAC operations
+ */
+
+/**
+ * \brief  Two-way signed multiplication and subtraction of
+	   two 16-bit fractional vectors. The result is rounded and saturated.
+		a.h1 = SAT16(RND16((acchi -= (b.h1*c.h1))<<1));
+		a.h0 = SAT16(RND16((acclo -= (b.h0*c.h0))<<1));
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmsub2hfr(b, c)			_vmsub2hfr(b, c)
+extern unsigned _vmsub2hfr(unsigned, unsigned);
+#pragma intrinsic(_vmsub2hfr, name=> "vmsub2hfr" __ACC_RW_EFFECTS);
+
+/**
+ * \brief  Two-way signed multiplication and subtraction of two 16-bit fractional vectors.
+ 	   The result is saturated and stored.
+		a.h1 = SAT16((acchi -= (b.h1*c.h1))<<1);
+		a.h0 = SAT16((acclo -= (b.h0*c.h0))<<1);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmsub2hf(b, c)			_vmsub2hf(b, c)
+extern unsigned _vmsub2hf(unsigned, unsigned);
+#pragma intrinsic(_vmsub2hf, name=> "vmsub2hf" __ACC_RW_EFFECTS);
+
+/**
+ * \brief  Two-way signed multiplication and accumulation of two 16-bit fractional vectors.
+ 	   The result is rounded and saturated, and returned without a fractional shift.
+		a.h1 = SAT16(RND16(acchi + (b.h1 * c.h1)));
+		a.h0 = SAT16(RND16(acclo + (b.h0 * c.h0)));
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmac2hnfr(b, c)			_vmac2hnfr(b, c)
+extern unsigned _vmac2hnfr(unsigned, unsigned);
+#pragma intrinsic(_vmac2hnfr, name=> "vmac2hnfr" __ACC_RW_EFFECTS);
+
+/**
+ * \brief  Two-way signed multiplication and subtraction of two 16-bit fractional vectors.
+ 	   The result is saturated, and returned without a fractional shift.
+		a.h1 = SAT16(RND16(acchi - (b.h1*c.h1)));
+		a.h0 = SAT16(RND16(acclo - (b.h0*c.h0)));
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmsub2hnfr(b, c)			_vmsub2hnfr(b, c)
+extern unsigned _vmsub2hnfr(unsigned, unsigned);
+#pragma intrinsic(_vmsub2hnfr, name=> "vmsub2hnfr" __ACC_RW_EFFECTS);
+
+/**
+ * \brief  Dual 16-bit SIMD multiplication.
+		if (cc) {
+			acc.w0 = A.w0 = b.h0 * c.h0;
+			acc.w1 = A.w1 = b.h1 * c.h1;
+		}
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return long long a
+ */
+#define _arc_vmpy2h(b, c)			_vmpy2h(b, c)
+extern long long _vmpy2h(unsigned, unsigned);
+#pragma intrinsic(_vmpy2h, name=> "vmpy2h" __ACC_W_EFFECTS);
+
+/**
+ * \brief  Two-way signed multiplication of two 16-bit fractional vectors.
+ 	   The result is saturated and stored.
+		a.h1 = SAT16((acchi =(b.h1 * c.h1))<<1);
+		a.h0 = SAT16((acclo =(b.h0 * c.h0))<<1);
+ * \param[in] unsigned b
+ * \param[in] unsigned c
+ * \return unsigned a
+ */
+#define _arc_vmpy2hf(b, c)			_vmpy2hf(b, c)
+extern unsigned _vmpy2hf(unsigned, unsigned);
+#pragma intrinsic(_vmpy2hf, name=> "vmpy2hf" __ACC_W_EFFECTS);
 
 #endif /* ARC_FEATURE_DSP2 */
 
