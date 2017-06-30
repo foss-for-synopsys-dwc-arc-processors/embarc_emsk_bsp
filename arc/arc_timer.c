@@ -47,7 +47,7 @@
  * \retval 1 present
  * \retval 0 not present
  */
-int32_t timer_present(const uint32_t no)
+int32_t arc_timer_present(const uint32_t no)
 {
 	uint32_t bcr = _arc_aux_read(AUX_BCR_TIMERS);
 	switch (no) {
@@ -76,9 +76,9 @@ int32_t timer_present(const uint32_t no)
  * \param[in] val	timer limit value (not for RTC)
  * \return 0 success, -1 failure
  */
-int32_t timer_start(const uint32_t no, const uint32_t mode, const uint32_t val)
+int32_t arc_timer_start(const uint32_t no, const uint32_t mode, const uint32_t val)
 {
-	if (timer_present(no) == 0) {
+	if (arc_timer_present(no) == 0) {
 		return -1;
 	}
 
@@ -111,9 +111,9 @@ int32_t timer_start(const uint32_t no, const uint32_t mode, const uint32_t val)
  * \param[in] no timer number
  * \return 0 success, -1 failure
  */
-int32_t timer_stop(const uint32_t no)
+int32_t arc_timer_stop(const uint32_t no)
 {
-	if (timer_present(no) == 0) {
+	if (arc_timer_present(no) == 0) {
 		return -1;
 	}
 
@@ -145,9 +145,9 @@ int32_t timer_stop(const uint32_t no)
  * \param[out] val, timer value
  * \return 0 success, -1 failure
  */
-int32_t timer_current(const uint32_t no, void *val)
+int32_t arc_timer_current(const uint32_t no, void *val)
 {
-	if (timer_present(no) == 0) {
+	if (arc_timer_present(no) == 0) {
 		return -1;
 	}
 
@@ -174,11 +174,11 @@ int32_t timer_current(const uint32_t no, void *val)
  * \param[in] no timer number
  * \return 0 success, -1 failure
  */
-int32_t timer_int_clear(const uint32_t no)
+int32_t arc_timer_int_clear(const uint32_t no)
 {
 	uint32_t val;
 
-	if (timer_present(no) == 0) {
+	if (arc_timer_present(no) == 0) {
 		return -1;
 	}
 
@@ -203,9 +203,9 @@ int32_t timer_int_clear(const uint32_t no)
 /**
  * \brief  init internal timer
  */
-void timer_init(void)
+void arc_timer_init(void)
 {
-	timer_stop(TIMER_0);
-	timer_stop(TIMER_1);
-	timer_stop(TIMER_RTC);
+	arc_timer_stop(TIMER_0);
+	arc_timer_stop(TIMER_1);
+	arc_timer_stop(TIMER_RTC);
 }

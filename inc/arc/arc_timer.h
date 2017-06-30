@@ -84,12 +84,12 @@
 extern "C" {
 #endif
 
-extern int32_t timer_present(const uint32_t no);
-extern int32_t timer_start(const uint32_t no, const uint32_t mode, const uint32_t val);
-extern int32_t timer_stop(const uint32_t no);
-extern int32_t timer_current(const uint32_t no, void* val);
-extern int32_t timer_int_clear(const uint32_t no);
-extern void timer_init(void);
+extern int32_t arc_timer_present(const uint32_t no);
+extern int32_t arc_timer_start(const uint32_t no, const uint32_t mode, const uint32_t val);
+extern int32_t arc_timer_stop(const uint32_t no);
+extern int32_t arc_timer_current(const uint32_t no, void* val);
+extern int32_t arc_timer_int_clear(const uint32_t no);
+extern void arc_timer_init(void);
 
 #ifdef __cplusplus
 }

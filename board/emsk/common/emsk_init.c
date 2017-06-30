@@ -107,7 +107,7 @@ static void emsk_mux_init(void)
  */
 void board_init(void)
 {
-	timer_init();
+	arc_timer_init();
 	emsk_mux_init();
 	emsk_gpio_init();
 	emsk_timer_init();
