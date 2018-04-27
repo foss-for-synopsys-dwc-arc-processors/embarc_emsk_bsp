@@ -1,8 +1,6 @@
 	-arcv2em
-	-core3
-	-Hrgf_banked_regs=32
+	-core2
 	-HL
-	-Xunaligned
 	-Xcode_density
 	-Xdiv_rem=radix2
 	-Xswap
@@ -13,16 +11,7 @@
 	-Xdsp2
 	-Xdsp_complex
 	-Xdsp_divsqrt=radix2
-	-Xdsp_itu
-	-Xdsp_accshift=full
-	-Xagu_large
-	-Xxy
-	-Xbitstream
-	-Xfpus_div
-	-Xfpu_mac
-	-Xfpuda
-	-Xfpus_mpy_slow
-	-Xfpus_div_slow
+	-Xdsp_accshift=limited
 	-Xtimer0
 	-Xtimer1
 	-Xstack_check
