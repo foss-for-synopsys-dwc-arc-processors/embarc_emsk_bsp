@@ -1,5 +1,55 @@
+# Object files
 *.o
+*.ko
+*.obj
 *.elf
+*.bin
+*.hex
+*.dasm
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.pyc
+
+# Map file
 *.map
-*.d
+
+# vim swap file
+*.swp
+
+# dependency file
+*.o.d
+
+# TAGS
+*.tags*
+*TAGS*
+*tags*
+
+# logs
 *.log
+
+# generated link file
+*.ldf
+*.mkdir_done
+
+# metaware debugger temp files
+**/.sc.project
+
+# ide project temporary files
+**/.metadata
+**/.settings
