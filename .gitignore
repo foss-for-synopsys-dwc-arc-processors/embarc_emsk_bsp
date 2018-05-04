@@ -53,3 +53,8 @@
 # ide project temporary files
 **/.metadata
 **/.settings
+
+# TCF generated files
+arc_core_config.h
+ccac.arg
+gcc.arg
