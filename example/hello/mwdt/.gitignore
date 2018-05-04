@@ -7,3 +7,8 @@
 *.d
 *.log
 .settings
+*.ld
+*.tcf
+arc_core_config.h
+gcc.arg
+ccac.arg
