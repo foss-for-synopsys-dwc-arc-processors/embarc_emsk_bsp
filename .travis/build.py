@@ -16,6 +16,7 @@ def get_makefile(path): # to find the makefile in the embarc_applications
 				make_path[key] = root
 
 def embarc_makefile(paths): # to confirm the file is a embarc makefile
+    result = []
 	for (k,v) in paths.items():
 		with open(os.path.join(v,"Makefile")) as f:
 			embarc_root = False
@@ -27,7 +28,10 @@ def embarc_makefile(paths): # to confirm the file is a embarc makefile
 				if "APPL" in line:
 					appl = True
 			if not (embarc_root and appl):
-				paths.pop(k)
+				result.append(k)
+				#paths.pop(k)
+	for k in result:
+		paths.pop(k)
 
 if __name__ == '__main__':
 	result = {}
