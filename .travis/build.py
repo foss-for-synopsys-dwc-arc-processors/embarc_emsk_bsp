@@ -42,11 +42,7 @@ if __name__ == '__main__':
 	print(bsp_path)
 	print(bsp_application)
 	get_makefile(bsp_application)
-	print("make path:")
-	print(make_path)
 	embarc_makefile(make_path)
-	print("arc path")
-	print(make_path)
 	for (k,v) in make_path.items():
 		result[k] = 0
 		print("application[%s]=" %k,v)
