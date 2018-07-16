@@ -59,6 +59,8 @@ def make_file(config,bsp_config,makefile_paths):
 	result = dict()
 	for tcf in tcfs:
 		for (k,v) in makefile_paths.items():
+			if "mwdt" in k:
+				continue
 			os.chdir(os.path.join(bsp_config,bd_ver))
 			command = "tcftool " + tcf + " -q -x C_defines,arc_core_config.h -x gcc.arg"
 			os.popen(command)
