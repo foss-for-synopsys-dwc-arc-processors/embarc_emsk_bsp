@@ -29,6 +29,8 @@ def embarc_makefile(paths):
 					appl = True
 			if not (embarc_root and appl):
 				result.append(k)
+			if "mwdt" in k:
+			     result.append(k)
 	for k in result:
 		paths.pop(k)
 
@@ -47,6 +49,7 @@ if __name__ == '__main__':
 		print("application[%s]=" %k,v)
 		pathin = v.replace("\\", "/")
 		os.chdir(pathin)
+		os.popen("mv linker_gnu.ld arc_core.ld")
 		print("make configuration: ",sys.argv[1])
 		print("start compile")
 		os.system("make "+sys.argv[1]+" clean") 
