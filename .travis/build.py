@@ -11,7 +11,7 @@ def get_makefile(path): # to find the makefile in the embarc_applications
 	for root, dirs, files in os.walk(path):
 		dirs[:] = [d for d in dirs  if not d.startswith('.')]
 		for f in files:
-			if f == makefile:
+			if f == makefile or f == makefile.capitalize():
 				key = os.path.basename(root)+'_'+os.path.basename(os.path.dirname(root))
 				make_path[key] = root
 
