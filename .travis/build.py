@@ -37,11 +37,11 @@ if __name__ == '__main__':
 	cwd_path = os.getcwd() # /.travis
 	bsp_path = os.path.dirname(cwd_path) # embarc_emsk_bsp
 	bsp_application = bsp_path + "/example"
-	print(cwd_path)
-	print(bsp_path)
-	print(bsp_application)
 	get_makefile(bsp_application)
+	print(make_path)
 	embarc_makefile(make_path)
+	print(make_path)
+
 	for (k,v) in make_path.items():
 		result[k] = 0
 		print("application[%s]=" %k,v)
