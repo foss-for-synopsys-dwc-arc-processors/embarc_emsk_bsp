@@ -33,16 +33,80 @@ def embarc_makefile(paths):
 			     result.append(k)
 	for k in result:
 		paths.pop(k)
+def get_bd_ver(config):
+	bd_config = config.split(" ")[2]
+	if "11" in bd_config:
+		bd_ver = "11"
+	elif "22" in bd_config:
+		bd_ver = "22"
+	elif "23" in bd_config:
+		bd_ver = "23"
+	else:
+		bd_ver = None
+	return bd_ver
+
+def get_tcf(path):
+	result = []
+	for path in os.listdir(path):
+		suffix = os.path.splitext(path)[1]
+		if suffix == ".tcf":
+			result.append(path)
+	return result
+	
+def make_file(config,bsp_config,makefile_paths):
+	bd_ver = get_bd_ver(config) #11
+	tcfs = get_tcf(os.path.join(bsp_config,bd_ver))
+	result = dict()
+	for tcf in tcfs:
+		for (k,v) in makefile_paths.items()::
+			os.chdir(os.path.join(bsp_config,bd_ver))
+			command = "tcftool " + tcf + " -q -x C_defines,arc_core_config.h -x gcc.arg"
+			os.popen(command)
+			command = "mv arc_core_config.h gcc.arg " + v
+			os.popen(command)
+			os.popen("cp ld/linker_gnu.ld " + v)
+			os.chdir(v)
+			os.popen("mv linker_gnu.ld arc_core.ld")
+			os.system("make " + config + " clean")
+			key = tcf + "_" + k
+			if os.system("make "+config+" -k") != 0:
+				result[key] = 1
+			else:
+				result[key] = 0
+
+
+	return result
+
+
+
 
 if __name__ == '__main__':
-	result = {}
+	# result = {}
 	cwd_path = os.getcwd() # /.travis
 	bsp_path = os.path.dirname(cwd_path) # embarc_emsk_bsp
-	bsp_application = bsp_path + "/example"
+	bsp_application = os.path.join(bsp_path , "example")
+	bsp_config = os.path.join(bsp_path , "board/emsk/configs")
 	get_makefile(bsp_application)
 	print(make_path)
+	result = make_file(sys.argv[1],bsp_config,make_path)
+	os.chdir(cwd_path)
+	print("Compilation result")
+	print(result)
+	for (k,v) in result.items():
+		if v == 1:
+			print("build failed")
+			sys.exit(1)
+	sys.exit(0)
 	# embarc_makefile(make_path)
 	# print(make_path)
+	'''bd_ver = get_bd_ver(sys.argv[1])
+	tcfs = get_tcf(os.path.join(bsp_config,bd_ver))
+	for tcf in tcfs:
+		os.chdir(os.path.join(bsp_config,bd_ver))
+		command = "tcftool " + tcf + " -q -x C_defines,arc_core_config.h -x gcc.arg"
+		os.popen(command)
+		command = "mv arc_core_config.h gcc.arg " + 
+
 
 	for (k,v) in make_path.items():
 		result[k] = 0
@@ -67,4 +131,4 @@ if __name__ == '__main__':
 		if v == 1:
 			print("build failed")
 			sys.exit(1)
-	sys.exit(0)
+	sys.exit(0)'''
