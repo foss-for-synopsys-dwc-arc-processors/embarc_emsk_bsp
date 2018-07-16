@@ -39,8 +39,8 @@ if __name__ == '__main__':
 	bsp_application = bsp_path + "/example"
 	get_makefile(bsp_application)
 	print(make_path)
-	embarc_makefile(make_path)
-	print(make_path)
+	# embarc_makefile(make_path)
+	# print(make_path)
 
 	for (k,v) in make_path.items():
 		result[k] = 0
