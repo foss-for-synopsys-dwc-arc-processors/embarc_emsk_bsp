@@ -48,6 +48,8 @@ if __name__ == '__main__':
 		result[k] = 0
 		print("application[%s]=" %k,v)
 		pathin = v.replace("\\", "/")
+		if k.index("mwdt"):
+			continue
 		os.chdir(pathin)
 		os.popen("mv linker_gnu.ld arc_core.ld")
 		print("make configuration: ",sys.argv[1])
