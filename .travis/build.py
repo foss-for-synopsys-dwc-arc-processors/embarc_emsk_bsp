@@ -52,13 +52,13 @@ def get_tcf(path):
 		if suffix == ".tcf":
 			result.append(path)
 	return result
-	
+
 def make_file(config,bsp_config,makefile_paths):
 	bd_ver = get_bd_ver(config) #11
 	tcfs = get_tcf(os.path.join(bsp_config,bd_ver))
 	result = dict()
 	for tcf in tcfs:
-		for (k,v) in makefile_paths.items()::
+		for (k,v) in makefile_paths.items():
 			os.chdir(os.path.join(bsp_config,bd_ver))
 			command = "tcftool " + tcf + " -q -x C_defines,arc_core_config.h -x gcc.arg"
 			os.popen(command)
