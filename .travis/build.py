@@ -68,6 +68,7 @@ def make_file(config,bsp_config,makefile_paths):
 			os.popen(command)
 			command = "mv arc_core_config.h gcc.arg " + v
 			os.popen(command)
+			print(command)
 			os.popen("cp ld/linker_gnu.ld " + v)
 			os.chdir(v)
 			os.popen("mv linker_gnu.ld arc_core.ld")
