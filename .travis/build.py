@@ -84,7 +84,10 @@ def make_file(config):
 		tcf = get_tcf(board,bd_ver,cur_core)
 
 		os.popen("tcftool " + tcf["path"] + " -q -x C_defines,arc_core_config.h -x gcc.arg")
+		for file in os.listdir(os.getcwd()):
+			print(file)
 		tcf_dir = os.path.dirname(tcf["path"])
+
 		arc_core_config = os.path.join(os.getcwd(),"arc_core_config.h")
 		gcc = os.path.join(os.getcwd(),"gcc.arg")
 		linker = os.path.join(tcf_dir,"ld","linker_gnu.ld")
@@ -95,8 +98,7 @@ def make_file(config):
 			os.popen("mv " + arc_core_config + " " + gcc +" " + v)
 			os.popen("cp "+ linker + " " +v)
 			os.chdir(v)
-			for file in os.listdir(os.getcwd()):
-				print(file)
+
 			os.popen("mv linker_gnu.ld arc_core.ld")
 			os.system("make " + config + " clean")
 			key = bd_ver + "_" + cur_core+"_" +k
