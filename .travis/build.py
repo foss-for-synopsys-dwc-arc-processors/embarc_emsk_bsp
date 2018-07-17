@@ -56,6 +56,7 @@ def get_tcf(path):
 def make_file(config,bsp_config,makefile_paths):
 	bd_ver = get_bd_ver(config) #11
 	tcfs = get_tcf(os.path.join(bsp_config,bd_ver))
+	print(tcfs)
 	result = dict()
 	for tcf in tcfs:
 		for (k,v) in makefile_paths.items():
