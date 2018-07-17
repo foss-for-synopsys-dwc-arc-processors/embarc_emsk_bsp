@@ -66,6 +66,8 @@ def make_file(config,bsp_config,makefile_paths):
 			print(command)
 			print(os.getcwd())
 			os.popen("ls")
+			for file in os.listdir(os.getcwd()):
+				print(file)
 			os.popen(command)
 			command = "mv arc_core_config.h gcc.arg " + v
 			os.popen(command)
