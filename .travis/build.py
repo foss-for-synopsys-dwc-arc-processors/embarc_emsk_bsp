@@ -110,9 +110,11 @@ def build_makefile_project(app_path, config):
 
 	tcf_name = cur_core + ".tcf"
 	tcf_found = get_tcf(bsp_root, board, bd_ver, cur_core)
+	print("tcf_path",tcf_found)
 	tcf_path = tcf_found[tcf_name]
 	if tcf_path != None:
 		makefile_found = get_makefile(app_path)
+		print("makefile_found",makefile_found)
 		if makefile_found != None:
 			isMakeProject = True
 			print("Prepare the generated files for application {}".format(app_path))
