@@ -101,38 +101,4 @@ if __name__ == '__main__':
 			print("build failed")
 			sys.exit(1)
 	sys.exit(0)
-	# embarc_makefile(make_path)
-	# print(make_path)
-	'''bd_ver = get_bd_ver(sys.argv[1])
-	tcfs = get_tcf(os.path.join(bsp_config,bd_ver))
-	for tcf in tcfs:
-		os.chdir(os.path.join(bsp_config,bd_ver))
-		command = "tcftool " + tcf + " -q -x C_defines,arc_core_config.h -x gcc.arg"
-		os.popen(command)
-		command = "mv arc_core_config.h gcc.arg " + 
 
-
-	for (k,v) in make_path.items():
-		result[k] = 0
-		print("application[%s]=" %k,v)
-		pathin = v.replace("\\", "/")
-		if "mwdt" in k:
-			continue
-		os.chdir(pathin)
-		os.popen("mv linker_gnu.ld arc_core.ld")
-		print("make configuration: ",sys.argv[1])
-		print("start compile")
-		os.system("make "+sys.argv[1]+" clean") 
-
-		if os.system("make "+sys.argv[1]+" -k") != 0:
-
-			result[k] = 1
-		pathout = cwd_path 
-		os.chdir(pathout)
-	print("Compilation result")
-	print(result)
-	for (k,v) in result.items():
-		if v == 1:
-			print("build failed")
-			sys.exit(1)
-	sys.exit(0)'''
