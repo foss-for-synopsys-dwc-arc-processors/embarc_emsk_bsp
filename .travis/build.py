@@ -95,6 +95,8 @@ def make_file(config):
 			os.popen("mv " + arc_core_config + " " + gcc +" " + v)
 			os.popen("cp "+ linker + " " +v)
 			os.chdir(v)
+			for file in os.listdir(os.getcwd()):
+				print(f)
 			os.popen("mv linker_gnu.ld arc_core.ld")
 			os.system("make " + config + " clean")
 			key = bd_ver + "_" + cur_core+"_" +k
