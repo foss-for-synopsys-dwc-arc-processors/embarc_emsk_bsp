@@ -122,8 +122,9 @@ if __name__ == '__main__':
 	print("Compilation result")
 	print(result)
 	for (k,v) in result.items():
-		if v == 1:
-			print("build failed")
-			sys.exit(1)
+		if "arggnu" in k:
+			if v == 1 :
+				print("build failed")
+				sys.exit(1)
 	sys.exit(0)
 
