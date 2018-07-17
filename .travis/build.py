@@ -86,13 +86,13 @@ def make_file(config):
 		os.popen("tcftool " + tcf["path"] + " -q -x C_defines,arc_core_config.h -x gcc.arg")
 		tcf_dir = os.path.dirname(tcf["path"])
 		arc_core_config = os.path.join(os.getcwd(),"arc_core_config.h")
-		cacc = os.path.join(os.getcwd(),"gcc.arg")
+		gcc = os.path.join(os.getcwd(),"gcc.arg")
 		linker = os.path.join(tcf_dir,"ld","linker_gnu.ld")
 
 		get_makefile(os.getcwd())
 		for (k,v) in make_path.items():
 			print("makepath...............",v)
-			os.popen("mv " + arc_core_config + " " + cacc +" " + v)
+			os.popen("mv " + arc_core_config + " " + gcc +" " + v)
 			os.popen("cp "+ linker + " " +v)
 			os.chdir(v)
 			os.popen("mv linker_gnu.ld arc_core.ld")
