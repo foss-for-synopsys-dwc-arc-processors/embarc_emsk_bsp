@@ -63,6 +63,8 @@ def make_file(config,bsp_config,makefile_paths):
 				continue
 			os.chdir(os.path.join(bsp_config,bd_ver))
 			command = "tcftool " + tcf + " -q -x C_defines,arc_core_config.h -x gcc.arg"
+			print(command)
+			os.popen("ls")
 			os.popen(command)
 			command = "mv arc_core_config.h gcc.arg " + v
 			os.popen(command)
