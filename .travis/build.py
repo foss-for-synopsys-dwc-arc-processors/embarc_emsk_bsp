@@ -84,8 +84,7 @@ def make_file(config):
 		tcf = get_tcf(board,bd_ver,cur_core)
 
 		os.popen("tcftool " + tcf["path"] + " -q -x C_defines,arc_core_config.h -x gcc.arg")
-		for file in os.listdir(os.getcwd()):
-			print(file)
+		print(os.listdir(os.getcwd()))
 		tcf_dir = os.path.dirname(tcf["path"])
 
 		arc_core_config = os.path.join(os.getcwd(),"arc_core_config.h")
