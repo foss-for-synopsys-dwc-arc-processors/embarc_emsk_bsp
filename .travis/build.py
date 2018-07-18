@@ -62,7 +62,7 @@ def get_board_version(bsp_root, bd_name):
 
 def get_board(bsp_root):
 	result = dict()
-	board_path = os.path.join(bsp_root, "board"):
+	board_path = os.path.join(bsp_root, "board")
 	result["emsk"] = None
 	if os.path.exists(board_path):
 		if "emsk" in os.listdir(board_path):
