@@ -3,9 +3,6 @@ import os
 import sys
 import shutil
 
-folder = ".travis"
-make_path = dict()
-makefile = 'makefile'
 MakefileNames = ['Makefile', 'makefile', 'GNUMakefile']
 
 def get_makefile(app_path):
@@ -39,6 +36,37 @@ def get_tcf(bsp_root, bd_name, bd_version, bd_core):
 	result[tcf_name] = None
 	if os.path.exists(tcf_path) and os.path.isfile(tcf_path):
 		result[tcf_name] = tcf_path
+	return result
+
+def get_tcfs(bsp_root, bd_name, bd_version):
+	result = dict()
+	board_path = "board/" + bd_name + "/configs/" + bd_version
+	tcfs_path = os.path.join(bsp_root, board_path)
+	if os.path.exists(tcfs_path):
+		for file in os.listdir(tcfs_path):
+			filename, filesuffix = os.path.splitext(file)
+			if not filesuffix == ".tcf":
+				continue
+			result[file] = os.path.join(tcfs_path, file)
+	return result
+
+def get_board_version(bsp_root, bd_name):
+	result = dict()
+	board_path = "board/" + bd_name + "/configs/"
+	ver_path = os.path.join(bsp_root, board_path)
+	if os.path.exists(ver_path):
+		for file in os.listdir(ver_path):
+			if os.path.isdir(file):
+				result[file] = os.path.join(ver_path, file)
+	return result
+
+def get_board(bsp_root):
+	result = dict()
+	board_path = os.path.join(bsp_root, "board"):
+	result["emsk"] = None
+	if os.path.exists(board_path):
+		if "emsk" in os.listdir(board_path):
+			result["emsk"] = os.path.join(board_path, "emsk")
 	return result
 
 def prepare_generated_files(app_path, tcf_path, toolchain):

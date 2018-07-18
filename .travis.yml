@@ -9,8 +9,8 @@ python:
 before_install:
   - bash .travis/before_install.sh
   # setup git
-  - git config --global user.name "${U_NAME}"
-  - git config --global user.email "${U_EMAIL}"
+  # - git config --global user.name "${U_NAME}"
+  # - git config --global user.email "${U_EMAIL}"
 
 script:
   - bash .travis/script.sh
