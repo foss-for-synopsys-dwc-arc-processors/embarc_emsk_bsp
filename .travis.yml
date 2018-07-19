@@ -29,6 +29,6 @@ matrix:
     - env: BSP_ROOT="." TOOLCHAIN="gnu" BOARD="emsk" BD_VER="23" CUR_CORE="arcem7d"
       os: linux
       compiler: gcc
-    - env: BSP_ROOT="." TOOLCHAIN="gnu" BOARD="emsk" BD_VER="23" CUR_CORE="arcem11d"
+    - env: BSP_ROOT="." TOOLCHAIN="gnu"
       os: linux
       compiler: gcc
