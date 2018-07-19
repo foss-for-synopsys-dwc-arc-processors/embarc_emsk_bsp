@@ -1,4 +1,6 @@
 # embARC BSP for EMSK
+[![Build Status](https://travis-ci.org/foss-for-synopsys-dwc-arc-processors/embarc_emsk_bsp.svg?branch=master)](https://travis-ci.org/foss-for-synopsys-dwc-arc-processors/embarc_emsk_bsp)
+
 ## Introduction
 The embARC Board support Package (BSP) for DesignWare® ARC® EM Starter Kit (EMSK) is a software distribution aimed at facilitating the development and evaluation of embedded systems based on ARCv2 processors.
 
