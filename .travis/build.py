@@ -9,18 +9,24 @@ from sys import stderr, stdout
 MakefileNames = ['Makefile', 'makefile', 'GNUMakefile']
 default_root = "."
 
-def download_file(url, local):
+def download_file(url, path):
     try:
-    	urllib.request.urlretrieve(url, local)
+    	urllib.request.urlretrieve(url, path)
     except Exception as e:
     	print(e)
     	print("This file from {} can't be download".format(url))
     	sys.exit(1)
     	
-def download_gnu(version, local):
-	baseurl = "https://github.com/foss-for-synopsys-dwc-arc-processors/toolchain/releases/download"
+def download_gnu(version="2017.09", path=None):
+	baseurl = "https://github.com/foss-for-synopsys-dwc-arc-processors/toolchain/releases/download/"
 	url = baseurl + "arc-" + version + "-release/arc_gnu_"  + version+ "_prebuilt_elf32_le_linux_install.tar.gz"
-	download_file(url,local)
+	if path is not None:
+		path = os.path.join(path , "arc_gnu_" + version +"_prebuilt_elf32_le_linux_install.tar.gz")
+	else:
+		path = os.path.join(os.getcwd(), "arc_gnu_" + version +"_prebuilt_elf32_le_linux_install.tar.gz")
+	download_file(url, path)
+	gnu = "arc_gnu_" + version + "_prebuilt_elf32_le_linux_install.tar.gz"
+	return gnu
 
 def unzip(file, path):
 	try:
@@ -52,6 +58,15 @@ def extract_file(file, path):
 
 def add_env_path(path):
 	sys.path.append(path)
+
+def add_gnu(version, path=None):
+	os.chdir("/")
+	os.chdir("tmp")
+	gnu = download_gnu(version, path)
+	extract_file(gnu, os.getcwd())
+	gnu_bin_path = os.path.join(gnu.split(".")[0],"bin")
+	add_env_path(os.path.join(os.getcwd(), gnu_bin_path))
+	os.system("arc-elf32-gcc --version")
 
 def get_makefile(app_path):
 	for makefile in MakefileNames:
@@ -233,12 +248,24 @@ def build_project_configs(app_path, config):
 
 if __name__ == '__main__':
 	# result = {}
+
 	cwd_path = os.getcwd() # /.travis
-	bsp_path = os.path.dirname(cwd_path) # embarc_emsk_bsp
+	bsp_path = os.path.dirname(cwd_path)
+	add_gnu("2017.09")
+
+	'''os.chdir("/")
+
+	os.chdir("tmp")
+	version = "2018.03"
+	download_gnu(local="arc_gnu_2017.09_prebuilt_elf32_le_linux_install.tar.gz")
+	extract_file("arc_gnu_2017.09_prebuilt_elf32_le_linux_install.tar.gz",os.getcwd())
+	add_env_path(os.path.join(os.getcwd(),"arc_gnu_2017.09_prebuilt_elf32_le_linux_install/bin"))'''
+	
 
 	make_config = get_config(sys.argv[1])
 	os.chdir(bsp_path)
 	results, build_count = build_project_configs("example/hello/arcgnu",make_config)
+
 	os.chdir(cwd_path)
 
 	print("Compilation result")
