@@ -5,7 +5,9 @@ import shutil
 import zipfile
 import tarfile
 import urllib.request
-from sys import stderr, stdout 
+from sys import stderr, stdout
+from prettytable import PrettyTable
+
 MakefileNames = ['Makefile', 'makefile', 'GNUMakefile']
 default_root = "."
 
@@ -57,7 +59,9 @@ def extract_file(file, path):
 
 
 def add_env_path(path):
-	sys.path.append(path)
+	print("path to env  ",path)
+	os.system("export PATH=" + path + ":$PATH")
+	print(sys.path)
 
 def add_gnu(version, path=None):
 	os.chdir("/")
@@ -65,7 +69,7 @@ def add_gnu(version, path=None):
 	gnu = download_gnu(version, path)
 	extract_file(gnu, os.getcwd())
 	gnu_bin_path = os.path.join(gnu.split(".")[0],"bin")
-	add_env_path(os.path.join(os.getcwd(), gnu_bin_path))
+	# add_env_path(os.path.join(os.getcwd(), gnu_bin_path))
 	os.system("arc-elf32-gcc --version")
 
 def get_makefile(app_path):
@@ -210,6 +214,7 @@ def build_project_configs(app_path, config):
 	results = []
 	toolchain = "gnu"
 	build_count = 0
+	status = True
 	if "TOOLCHAIN" in make_configs:
 		toolchain = make_configs["TOOLCHAIN"]
 	if "BSP_ROOT" in make_configs:
@@ -242,37 +247,59 @@ def build_project_configs(app_path, config):
 					print("Application {} doesn't have makefile".format(app_path))
 				else:
 					build_count += 1
+					if result["status"] != 0:
+						status = False
 
 					results.append(result)
-	return results, build_count
+	return status, results, build_count
+
+def show_results(results):
+	columns = ['APP', 'CONF', 'TOOLCHAIN', 'PASS']
+	pt = PrettyTable(columns)
+	failed_pt = PrettyTable(columns)
+	failed_results = []
+	for result in results:
+		status = result.pop("status")
+		if status != 0:
+			result["PASS"] = "NO"
+			failed_results.append([v for (k, v) in result.items()])
+
+		else:
+			result["PASS"] = "YES"
+
+		
+		result_list = [v for (k, v) in result.items()]
+
+		
+		pt.add_row(result_list)
+	print("ALL results:")
+	print(pt)
+
+	for result in failed_results:
+		if len(result) > 0:
+			failed_pt.add_row(result)
+
+	print("Failed result:")
+	print(failed_pt)
+	
 
 if __name__ == '__main__':
 	# result = {}
 
 	cwd_path = os.getcwd() # /.travis
 	bsp_path = os.path.dirname(cwd_path)
-	add_gnu("2017.09")
-
-	'''os.chdir("/")
-
-	os.chdir("tmp")
-	version = "2018.03"
-	download_gnu(local="arc_gnu_2017.09_prebuilt_elf32_le_linux_install.tar.gz")
-	extract_file("arc_gnu_2017.09_prebuilt_elf32_le_linux_install.tar.gz",os.getcwd())
-	add_env_path(os.path.join(os.getcwd(),"arc_gnu_2017.09_prebuilt_elf32_le_linux_install/bin"))'''
-	
-
+	gnu_ver = sys.argv[2].split("=")[1]
+	add_gnu(gnu_ver)
 	make_config = get_config(sys.argv[1])
 	os.chdir(bsp_path)
-	results, build_count = build_project_configs("example/hello/arcgnu",make_config)
-
+	status, results, build_count = build_project_configs("example/hello/arcgnu",make_config)
 	os.chdir(cwd_path)
 
 	print("Compilation result")
 	print("This project is compiled for {} times".format(build_count))
-	print(results)
-	for result in results:
-		if result["status"]:
-			sys.exit(1)
+	show_results(results)
+	if status is False:
+		print("build failed")
+		sys.exit(1)
 	sys.exit(0)
 
