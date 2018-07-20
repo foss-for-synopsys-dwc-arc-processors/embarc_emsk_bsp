@@ -168,6 +168,7 @@ def build_makefile_project(app_path, config):
 	board = make_configs["BOARD"]
 	bd_ver = make_configs["BD_VER"]
 	cur_core = make_configs["CUR_CORE"]
+	gnu_ver = make_configs["GNU_VER"]
 
 	print(os.getcwd())
 
@@ -197,6 +198,7 @@ def build_makefile_project(app_path, config):
 			result["app"] = app_path
 			result["conf"] = conf_key
 			result["toolchain"] = toolchain
+			result["gnu_ver"] = gnu_ver
 			os.chdir(cur_dir)
 	else:
 		isMakeProject = False
@@ -208,6 +210,7 @@ def build_project_configs(app_path, config):
 	board_input = None
 	bd_ver_input = None
 	cur_core_input = None
+	gnu_ver = "2017.09"
 	bd_vers = dict()
 	cur_cors = dict()
 	make_config = dict()
@@ -215,6 +218,8 @@ def build_project_configs(app_path, config):
 	toolchain = "gnu"
 	build_count = 0
 	status = True
+	if "GNU_VER" in make_configs:
+		gnu_ver = make_configs["GNU_VER"]
 	if "TOOLCHAIN" in make_configs:
 		toolchain = make_configs["TOOLCHAIN"]
 	if "BSP_ROOT" in make_configs:
@@ -242,6 +247,7 @@ def build_project_configs(app_path, config):
 				make_config["BD_VER"] = bd_ver
 				make_config["CUR_CORE"] = cur_core
 				make_config["TOOLCHAIN"] = toolchain
+				make_config["GNU_VER"] = gnu_ver
 				isMakefileProject, result = build_makefile_project(app_path, make_config)
 				if isMakefileProject is False:
 					print("Application {} doesn't have makefile".format(app_path))
@@ -254,7 +260,7 @@ def build_project_configs(app_path, config):
 	return status, results, build_count
 
 def show_results(results):
-	columns = ['APP', 'CONF', 'TOOLCHAIN', 'PASS']
+	columns = ['APP', 'CONF', 'TOOLCHAIN', "GNU_VER", 'PASS']
 	pt = PrettyTable(columns)
 	failed_pt = PrettyTable(columns)
 	failed_results = []
@@ -291,6 +297,7 @@ if __name__ == '__main__':
 	gnu_ver = sys.argv[2].split("=")[1]
 	add_gnu(gnu_ver)
 	make_config = get_config(sys.argv[1])
+	make_config["GNU_VER"] = gnu_ver
 	os.chdir(bsp_path)
 	status, results, build_count = build_project_configs("example/hello/arcgnu",make_config)
 	os.chdir(cwd_path)
