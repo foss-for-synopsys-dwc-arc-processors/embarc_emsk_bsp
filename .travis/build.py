@@ -2,8 +2,75 @@ import json
 import os
 import sys
 import shutil
+import zipfile
+import tarfile
+import urllib.request
+from sys import stderr, stdout
+from prettytable import PrettyTable
 
 MakefileNames = ['Makefile', 'makefile', 'GNUMakefile']
+default_root = "."
+
+def download_file(url, path):
+    try:
+    	urllib.request.urlretrieve(url, path)
+    except Exception as e:
+    	print(e)
+    	print("This file from {} can't be download".format(url))
+    	sys.exit(1)
+    	
+def download_gnu(version="2017.09", path=None):
+	baseurl = "https://github.com/foss-for-synopsys-dwc-arc-processors/toolchain/releases/download/"
+	url = baseurl + "arc-" + version + "-release/arc_gnu_"  + version+ "_prebuilt_elf32_le_linux_install.tar.gz"
+	if path is not None:
+		path = os.path.join(path , "arc_gnu_" + version +"_prebuilt_elf32_le_linux_install.tar.gz")
+	else:
+		path = os.path.join(os.getcwd(), "arc_gnu_" + version +"_prebuilt_elf32_le_linux_install.tar.gz")
+	download_file(url, path)
+	gnu = "arc_gnu_" + version + "_prebuilt_elf32_le_linux_install.tar.gz"
+	return gnu
+
+def unzip(file, path):
+	try:
+		pack = zipfile.ZipFile(file, "r")
+		pack.extractall(path)
+		pack.close()
+	except Exception:
+		sys.exit(1)
+
+def untar(file, path):
+	try:
+		pack = tarfile.open(file, "r:gz")
+		files = pack.getnames()
+		for file in files:
+			pack.extract(file, path)
+		pack.close()
+	except Exception:
+		sys.exit(1)
+
+def extract_file(file, path):
+	filename, filesuffix = os.path.splitext(file)
+	if filesuffix == ".gz":
+		untar(file, path)
+	elif filesuffix == ".zip":
+		unzip(file, path)
+	else:
+		print("This file {} can't be extracted".format(file))
+
+
+def add_env_path(path):
+	print("path to env  ",path)
+	os.system("export PATH=" + path + ":$PATH")
+	print(sys.path)
+
+def add_gnu(version, path=None):
+	os.chdir("/")
+	os.chdir("tmp")
+	gnu = download_gnu(version, path)
+	extract_file(gnu, os.getcwd())
+	gnu_bin_path = os.path.join(gnu.split(".")[0],"bin")
+	# add_env_path(os.path.join(os.getcwd(), gnu_bin_path))
+	os.system("arc-elf32-gcc --version")
 
 def get_makefile(app_path):
 	for makefile in MakefileNames:
@@ -19,54 +86,58 @@ def get_config(config): # from input to get the config dict{"TOOLCHAIN":,"BOARD"
 		make_configs[config_name] = value
 	return make_configs
 
-def is_tcf(bd_name,bd_version,bd_core):
-	path = os.path.join(os.getcwd(),"board",bd_name,"configs",bd_version)
-	if os.path.exists(path):
-		tcf = bd_core + ".tcf"
-		if tcf in os.listdir(path):
-			return True
-		else:
-			return False
-
-def get_tcf(bsp_root, bd_name, bd_version, bd_core):
+def get_tcf(bsp_root, board, bd_version, cur_core):
 	result = dict()
-	tcf_name = bd_core + ".tcf"
-	board_path = "board/" + bd_name + "/configs/" + bd_version + "/"
+	tcf_name = cur_core + ".tcf"
+	board_path = "board/" + board + "/configs/" + bd_version + "/"
 	tcf_path = os.path.join(bsp_root, board_path, tcf_name)
 	result[tcf_name] = None
 	if os.path.exists(tcf_path) and os.path.isfile(tcf_path):
 		result[tcf_name] = tcf_path
 	return result
 
-def get_tcfs(bsp_root, bd_name, bd_version):
-	result = dict()
-	board_path = "board/" + bd_name + "/configs/" + bd_version
+def get_tcfs(bsp_root, board, bd_version, cur_core=None):
+	result = []
+	board_path = "board/" + board + "/configs/" + bd_version
 	tcfs_path = os.path.join(bsp_root, board_path)
 	if os.path.exists(tcfs_path):
+		if cur_core is not None:
+			cur_core_file = cur_core + ".tcf"
+			if cur_core_file in os.listdir(tcfs_path):
+				result.append(cur_core)
+				return result
 		for file in os.listdir(tcfs_path):
 			filename, filesuffix = os.path.splitext(file)
 			if not filesuffix == ".tcf":
 				continue
-			result[file] = os.path.join(tcfs_path, file)
+			result.append(filename)
 	return result
 
-def get_board_version(bsp_root, bd_name):
-	result = dict()
-	board_path = "board/" + bd_name + "/configs/"
+def get_board_version(bsp_root, board, bd_version=None):
+	result = []
+	board_path = "board/" + board + "/configs/"
 	ver_path = os.path.join(bsp_root, board_path)
 	if os.path.exists(ver_path):
+		if bd_version is not None:
+			if bd_version in os.listdir(board_path):
+				result.append(bd_version)
+				return result
 		for file in os.listdir(ver_path):
-			if os.path.isdir(file):
-				result[file] = os.path.join(ver_path, file)
+			if os.path.isdir(os.path.join(ver_path, file)):
+				result.append(file)
 	return result
 
-def get_board(bsp_root):
-	result = dict()
+def get_boards(bsp_root, board=None):
+	result = []
 	board_path = os.path.join(bsp_root, "board")
-	result["emsk"] = None
 	if os.path.exists(board_path):
-		if "emsk" in os.listdir(board_path):
-			result["emsk"] = os.path.join(board_path, "emsk")
+		if board is not None:
+			if board in os.listdir(board_path):
+				result.append(board)
+				return result
+		for file in os.listdir(board_path):
+			if os.path.isdir(os.path.join(board_path, file)):
+				result.append(file)
 	return result
 
 def prepare_generated_files(app_path, tcf_path, toolchain):
@@ -97,6 +168,7 @@ def build_makefile_project(app_path, config):
 	board = make_configs["BOARD"]
 	bd_ver = make_configs["BD_VER"]
 	cur_core = make_configs["CUR_CORE"]
+	gnu_ver = make_configs["GNU_VER"]
 
 	print(os.getcwd())
 
@@ -126,26 +198,115 @@ def build_makefile_project(app_path, config):
 			result["app"] = app_path
 			result["conf"] = conf_key
 			result["toolchain"] = toolchain
+			result["gnu_ver"] = gnu_ver
 			os.chdir(cur_dir)
 	else:
 		isMakeProject = False
 	return isMakeProject, result
 
+def build_project_configs(app_path, config):
+	make_configs = config
+	bsp_root = default_root
+	board_input = None
+	bd_ver_input = None
+	cur_core_input = None
+	gnu_ver = "2017.09"
+	bd_vers = dict()
+	cur_cors = dict()
+	make_config = dict()
+	results = []
+	toolchain = "gnu"
+	build_count = 0
+	status = True
+	if "GNU_VER" in make_configs:
+		gnu_ver = make_configs["GNU_VER"]
+	if "TOOLCHAIN" in make_configs:
+		toolchain = make_configs["TOOLCHAIN"]
+	if "BSP_ROOT" in make_configs:
+		bsp_root = make_configs["BSP_ROOT"]
+	if "BOARD" in make_configs:
+		board_input = make_configs["BOARD"]
+	boards = get_boards(bsp_root, board_input)
+	if "BD_VER" in make_configs: 
+		bd_ver_input = make_configs["BD_VER"]
+	for board in boards:
+		version = get_board_version(bsp_root, board, bd_version=bd_ver_input)
+		bd_vers[board] = version
+	if "CUR_CORE" in make_configs:
+		cur_core_input = make_configs["CUR_CORE"]
+	for (board, versions) in bd_vers.items():
+		cur_cors[board] = dict()
+		for version in versions:
+			cors = get_tcfs(bsp_root, board, version, cur_core=cur_core_input)
+			cur_cors[board][version] = cors
+	for board in cur_cors:
+		for bd_ver in cur_cors[board]:
+			for cur_core in cur_cors[board][bd_ver]:
+				make_config["BSP_ROOT"] = bsp_root
+				make_config["BOARD"] = board
+				make_config["BD_VER"] = bd_ver
+				make_config["CUR_CORE"] = cur_core
+				make_config["TOOLCHAIN"] = toolchain
+				make_config["GNU_VER"] = gnu_ver
+				isMakefileProject, result = build_makefile_project(app_path, make_config)
+				if isMakefileProject is False:
+					print("Application {} doesn't have makefile".format(app_path))
+				else:
+					build_count += 1
+					if result["status"] != 0:
+						status = False
 
+					results.append(result)
+	return status, results, build_count
+
+def show_results(results):
+	columns = ['APP', 'CONF', 'TOOLCHAIN', "GNU_VER", 'PASS']
+	pt = PrettyTable(columns)
+	failed_pt = PrettyTable(columns)
+	failed_results = []
+	for result in results:
+		status = result.pop("status")
+		if status != 0:
+			result["PASS"] = "NO"
+			failed_results.append([v for (k, v) in result.items()])
+
+		else:
+			result["PASS"] = "YES"
+
+		
+		result_list = [v for (k, v) in result.items()]
+
+		
+		pt.add_row(result_list)
+	print("ALL results:")
+	print(pt)
+
+	for result in failed_results:
+		if len(result) > 0:
+			failed_pt.add_row(result)
+
+	print("Failed result:")
+	print(failed_pt)
+	
 
 if __name__ == '__main__':
 	# result = {}
-	cwd_path = os.getcwd() # /.travis
-	bsp_path = os.path.dirname(cwd_path) # embarc_emsk_bsp
 
-	make_configs = get_config(sys.argv[1])
+	cwd_path = os.getcwd() # /.travis
+	bsp_path = os.path.dirname(cwd_path)
+	gnu_ver = sys.argv[2].split("=")[1]
+	add_gnu(gnu_ver)
+	make_config = get_config(sys.argv[1])
+	make_config["GNU_VER"] = gnu_ver
 	os.chdir(bsp_path)
-	isMakefileProject, result = build_makefile_project("example/hello/arcgnu", make_configs)
+	status, results, build_count = build_project_configs("example/hello/arcgnu",make_config)
 	os.chdir(cwd_path)
-	#os.chdir(cwd_path)
+
 	print("Compilation result")
-	print(result)
-	if result["status"]:
+	print("This project is compiled for {} times".format(build_count))
+	show_results(results)
+	if status is False:
+		print("build failed")
 		sys.exit(1)
 	sys.exit(0)
 
