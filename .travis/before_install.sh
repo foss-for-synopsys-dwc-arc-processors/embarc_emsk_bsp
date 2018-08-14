@@ -12,10 +12,8 @@ set -x
     sudo apt-get update || die 
     sudo apt-get install lib32z1 || die
     sudo apt-get install dos2unix || die
-    sudo apt-get install python3-pip
-    wget https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz || die
-    tar xzf prettytable-0.7.2.tar.gz || die
-    cd prettytable-0.7.2 || die
-    python setup.py build || die
-    python setup.py install || die
+    pip install --upgrade pip || die
+    pip install PrettyTable || die
+    pip install colorama || die
+    pip install configparser || die
 }
