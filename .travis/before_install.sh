@@ -13,9 +13,9 @@ die() {
         die "Not able to post status to github, did you set EMBARC_BOT variable in travis ci setting page"
     fi
 
-    #sudo apt-get update || die
-    #sudo apt-get install lib32z1 || die
-    #sudo apt-get install dos2unix || die
+    sudo apt-get update || die
+    sudo apt-get install lib32z1 || die
+    sudo apt-get install dos2unix || die
     pip install --upgrade pip || die
     pip install PrettyTable || die
     pip install colorama || die

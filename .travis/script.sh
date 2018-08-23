@@ -3,7 +3,7 @@ die() {
     exit 1
 
 }
-#set -x
+set -x
 
 [ "$TRAVIS_OS_NAME" != "linux" ] || {
 

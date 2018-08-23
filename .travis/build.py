@@ -52,7 +52,7 @@ def download_gnu(version="2017.09", path=None):
 	gnu = "arc_gnu_" + version + "_prebuilt_elf32_le_linux_install.tar.gz"
 	if os.path.exists(cache_gnu):
 		if gnu in os.listdir(cache_gnu):
-			print Fore.BLUE + "toochain cache"
+			print Fore.BLUE + "toolchain cache is list as below"
 			print os.listdir(cache_gnu)
 			sys.stdout.flush()
 			cache_path = os.path.join(cache_gnu, gnu)
