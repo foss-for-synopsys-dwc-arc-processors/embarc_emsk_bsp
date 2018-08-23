@@ -15,7 +15,7 @@ import copy
 MakefileNames = ['Makefile', 'makefile', 'GNUMakefile']
 default_root = "."
 cache_folder = "/home/travis/.cache/result"
-cache_gnu = "/home/travis/.cache/toolcahin"
+cache_gnu = "/home/travis/.cache/toolchain"
 
 example = {"hello": "example/hello/arcgnu"}
 class TailRecurseException:
@@ -45,7 +45,7 @@ def download_file(url, path):
     	print "This file from %s can't be download"%(url)
     	sys.stdout.flush()
     	sys.exit(1)
-    	
+
 def download_gnu(version="2017.09", path=None):
 	baseurl = "https://github.com/foss-for-synopsys-dwc-arc-processors/toolchain/releases/download/"
 	url = baseurl + "arc-" + version + "-release/arc_gnu_"  + version+ "_prebuilt_elf32_le_linux_install.tar.gz"
@@ -232,7 +232,7 @@ def build_makefile_project(app_path, config):
 	tcf_path = tcf_found[tcf_name]
 	if tcf_path != None:
 		makefile_found = get_makefile(app_path)
-		
+
 		if makefile_found != None:
 			if is_embarc_makefile(makefile_found):
 			    isMakeProject = True
@@ -296,7 +296,7 @@ def build_project_configs(app_path, config):
 	if "BOARD" in make_configs and make_configs["BOARD"] is not None:
 		board_input = make_configs["BOARD"]
 	boards = get_boards(bsp_root, board_input)
-	if "BD_VER" in make_configs and make_configs["BD_VER"] is not None: 
+	if "BD_VER" in make_configs and make_configs["BD_VER"] is not None:
 		bd_ver_input = make_configs["BD_VER"]
 	for board in boards:
 		version = get_board_version(bsp_root, board, bd_version=bd_ver_input)
@@ -341,7 +341,7 @@ def build_project_configs(app_path, config):
 					print "now not have expected file"
 					expected_different[app_path].extend(may_compare)
 
-						
+
 
 	return status, results, build_count, expected_different
 
@@ -361,7 +361,7 @@ def get_expected_result(expected_file, app_path, board, bd_ver):
 					result = False
 			else:
 				result = False
-			
+
 	elif filesuffix == ".ini":
 		conf = ConfigParser()
 		conf.read(expected_file)
@@ -427,9 +427,9 @@ def show_results(results, expected=None):
 				for i in list_key:
 
 					result[i] = Fore.RED + result[i]
-					
+
 				failed_pt.add_row(result)
-				
+
 
 		print Fore.RED + "Failed result:"
 		print failed_pt
@@ -442,7 +442,7 @@ def build_result_combine(results=None, formal_result=None):
 	other_results = []
 	if formal_result is None:
 		formal_result = []
-	
+
 	for result in results[1:]:
 		conf = result.pop("conf")
 		if cmp(first_result, result) == 0:
@@ -524,7 +524,7 @@ def build_makefiles_project(config):
 	os.chdir(work_path)
 
 	for (app, app_path) in app_paths.items():
-		
+
 		status, results, build_count, expected_different = build_project_configs(app_path, config)
 		application_failed = application_all_failed(results)
 		if application_failed == 1:
@@ -555,7 +555,7 @@ def reference_results(results, gnu_ver, update=None):
 	cmp_result = None
 	sys.stdout.flush()
 	cmp_item_reference = 0
-	
+
 	try:
 		os.chdir(cache_folder)
 		json_file = gnu_ver + ".json"
@@ -586,16 +586,16 @@ def reference_results(results, gnu_ver, update=None):
 					else:
 						cmp_list = 0
 						for result in results:
-							if reuslt in reference_result_list:
+							if result in reference_result_list:
 								cmp_list += 1
 						if cmp_list != len(results):
 							cmp_item_reference = 1
 
 		return cmp_result, cmp_item_reference
-		
+
 	except Exception:
 		print "Can not find the cache file"
-	
+
 
 if __name__ == '__main__':
 	cwd_path = os.getcwd() # /.travis

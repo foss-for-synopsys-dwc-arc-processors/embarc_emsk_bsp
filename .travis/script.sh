@@ -3,16 +3,14 @@ die() {
     exit 1
 
 }
-set -x
+#set -x
 
-[ $TRAVIS_OS_NAME != linux ] || {
+[ "$TRAVIS_OS_NAME" != "linux" ] || {
 
     U_NAME=${U_NAME:=embARC_Bot}
     U_EMAIL=${U_EMAIL:=info@embARC.org}
-    echo $U_NAME, $U_EMAIL
     git config --global user.name "${U_NAME}"
     git config --global user.email "${U_EMAIL}"
-    bash -c "$STATUS" pending "Local $NAME testing is in progress" || die
 
     export PATH=/tmp/arc_gnu_${GNU_VER}_prebuilt_elf32_le_linux_install/bin:$PATH || die
     git checkout -- . || die
