@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-07-31
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 /**
  * \defgroup	BOARD_EMSK_COMMON_TIMER	EMSK Common Timer Module
@@ -50,12 +47,16 @@
  * \addtogroup	BOARD_EMSK_COMMON_TIMER
  * @{
  */
-#include "inc/arc/arc_builtin.h"
-#include "inc/arc/arc.h"
-#include "inc/arc/arc_timer.h"
-#include "inc/arc/arc_exception.h"
+#include "arc_builtin.h"
+#include "arc.h"
+#include "arc_timer.h"
+#include "arc_exception.h"
 
-#include "board/emsk/emsk.h"
+#include "board.h"
+
+#ifdef ENABLE_OS
+#include "os_hal_inc.h"
+#endif
 
 #define MAX_SYS_COUNTER_VALUE		(0xffffffff)
 
@@ -100,6 +101,10 @@ void board_timer_update(uint32_t precision)
 	if (sys_ms_update >= hz_conv) {
 		sys_ms_update = 0;
 		gl_emsk_ms_cnt ++;
+
+#ifdef MID_FATFS
+		emsk_sdcard_1ms_update();
+#endif
 	}
 }
 
@@ -109,7 +114,7 @@ void board_timer_update(uint32_t precision)
  */
 static void emsk_timer_isr(void *ptr)
 {
-	arc_timer_int_clear(BOARD_SYS_TIMER_ID);
+	timer_int_clear(BOARD_SYS_TIMER_ID);
 
 	board_timer_update(BOARD_SYS_TIMER_HZ);
 }
@@ -122,10 +127,10 @@ static void emsk_timer_isr(void *ptr)
  */
 void emsk_timer_init(void)
 {
-	if (arc_timer_present(BOARD_SYS_TIMER_ID)) {
+	if (timer_present(BOARD_SYS_TIMER_ID)) {
 		int_disable(BOARD_SYS_TIMER_INTNO); /* disable first then enable */
 		int_handler_install(BOARD_SYS_TIMER_INTNO, emsk_timer_isr);
-		arc_timer_start(BOARD_SYS_TIMER_ID, TIMER_CTRL_IE|TIMER_CTRL_NH, cyc_hz_count);  /* start 1ms timer interrupt */
+		timer_start(BOARD_SYS_TIMER_ID, TIMER_CTRL_IE|TIMER_CTRL_NH, cyc_hz_count);  /* start 1ms timer interrupt */
 
 		int_enable(BOARD_SYS_TIMER_INTNO);
 	}
@@ -133,13 +138,13 @@ void emsk_timer_init(void)
 
 /**
  * \brief	get current cpu hardware ticks
- * \retval	hardware ticks count in 64 bit format
+ * \retval	hardware ticks count in 64bit format
  */
 uint64_t board_get_hwticks(void)
 {
 	uint32_t sub_ticks;
 	uint64_t total_ticks;
-	arc_timer_current(TIMER_0, &sub_ticks);
+	timer_current(TIMER_0, &sub_ticks);
 
 	total_ticks = (uint64_t)OSP_GET_CUR_MS() * (BOARD_CPU_CLOCK/BOARD_SYS_TIMER_HZ);
 	total_ticks += (uint64_t)sub_ticks;
@@ -149,13 +154,13 @@ uint64_t board_get_hwticks(void)
 
 /**
  * \brief	get current passed us since timer init
- * \retval	us count in 64 bit format
+ * \retval	us count in 64bit format
  */
 uint64_t board_get_cur_us(void)
 {
 	uint32_t sub_us;
 	uint64_t total_us;
-	arc_timer_current(TIMER_0, &sub_us);
+	timer_current(TIMER_0, &sub_us);
 
 	sub_us = ((uint64_t)sub_us * 1000000) / BOARD_CPU_CLOCK;
 	total_us = ((uint64_t)OSP_GET_CUR_MS()) * 1000 + (uint64_t)sub_us;
@@ -181,6 +186,15 @@ void board_delay_ms(uint32_t ms, uint8_t os_compat)
 {
 	uint64_t start_us, us_delayed;
 
+#ifdef ENABLE_OS
+	if (os_compat == OSP_DELAY_OS_COMPAT_ENABLE) {
+		/** \todo add different os delay functions */
+#ifdef OS_FREERTOS
+		vTaskDelay(ms);
+		return;
+#endif
+	}
+#endif
 	us_delayed = ((uint64_t)ms * 1000);
 	start_us = board_get_cur_us();
 	while ((board_get_cur_us() - start_us) < us_delayed);

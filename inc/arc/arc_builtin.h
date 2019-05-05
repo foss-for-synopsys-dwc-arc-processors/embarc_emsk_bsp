@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-06-12
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -47,7 +44,7 @@
 #ifndef _ARC_HAL_BUILTIN_H_
 #define _ARC_HAL_BUILTIN_H_
 
-#include "inc/embARC_toolchain.h"
+#include "embARC_toolchain.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -106,16 +103,18 @@ extern "C" {
 #define _arc_swap32(a)			_swap32(a)
 #else
 Inline uint32_t _arc_swap32(uint32_t val) {
-	register uint32_t v;
-	__asm__ volatile ("swape %0, %1" :"=r"(v): "r"(val));
+	uint32_t v;
+
+	Asm("swape %0, %1" :"=r"(v): "r"(val));
 	return v;
 }
 
 Inline uint16_t _arc_swap16(uint32_t val) {
-	register uint32_t temp;
-	register uint32_t v;
-	__asm__ volatile ("swape %0, %1" :"=r"(temp): "r"(val));
-	__asm__ volatile ("lsr16 %0, %1" :"=r"(v): "r"(temp));
+	uint32_t temp;
+	uint32_t v;
+
+	Asm("swape %0, %1" :"=r"(temp): "r"(val));
+	Asm("lsr16 %0, %1" :"=r"(v): "r"(temp));
 	return (unsigned short)v;
 }
 #endif
@@ -164,30 +163,34 @@ Inline uint16_t _arc_swap16(uint32_t val) {
 #define _arc_swi 				__builtin_arc_swi
 
 Inline uint32_t _arc_clri(void) {
-	register uint32_t v;
-	__asm__ volatile ("clri %0" :"=r"(v));
+	uint32_t v;
+
+	Asm("clri %0" :"=r"(v));
 	return v;
 
 }
 /* \todo add more builtin functions of gnu tool */
 
 Inline uint32_t _arc_swap32(uint32_t val) {
-	register uint32_t v;
-	__asm__ volatile ("swape %0, %1" :"=r"(v): "r"(val));
+	uint32_t v;
+
+	Asm("swape %0, %1" :"=r"(v): "r"(val));
 	return v;
 }
 
 Inline uint16_t _arc_swap16(uint32_t val) {
-	register uint32_t temp;
-	register uint32_t v;
-	__asm__ volatile ("swape %0, %1" :"=r"(temp): "r"(val));
-	__asm__ volatile ("lsr16 %0, %1" :"=r"(v): "r"(temp));
+	uint32_t temp;
+	uint32_t v;
+
+	Asm("swape %0, %1" :"=r"(temp): "r"(val));
+	Asm("lsr16 %0, %1" :"=r"(v): "r"(temp));
 	return (unsigned short)v;
 }
 
 Inline void _arc_sync(void) {
-	__asm__ volatile ("sync");
+	Asm("sync");
 }
+
 
 /**
  * \note Following is a workaround for arc gcc
@@ -231,6 +234,7 @@ Inline void _arc_sync(void) {
 Inline uint32_t _arc_read_uncached_32(void *ptr)
 {
 	uint32_t __ret;
+
 	Asm("ld.di %0, [%1]":"=r"(__ret):"r"(ptr));
 	return __ret;
 }
@@ -253,6 +257,7 @@ Inline void _arc_write_uncached_32(void *ptr, uint32_t data)
 Inline uint32_t _arc_read_cached_32(void *ptr)
 {
 	uint32_t __ret;
+
 	Asm("ld %0, [%1]":"=r"(__ret):"r"(ptr));
 	return __ret;
 }
@@ -275,8 +280,9 @@ Inline void _arc_write_cached_32(void *ptr, uint32_t data)
  * \retval return value of main function
  */
 Inline int32_t _arc_goto_main(int argc, char **argv) {
-	int __ret;
-	__asm__ volatile(
+	int32_t __ret;
+
+	Asm(
 		"mov %%r0, %1\n"
 		"mov %%r1, %2\n"
 		"push_s %%blink\n"
@@ -284,7 +290,56 @@ Inline int32_t _arc_goto_main(int argc, char **argv) {
 		"pop_s %%blink\n"
 		"mov %0, %%r0"
 		:"=r"(__ret): "r"(argc), "r"(argv));
-	return (int)__ret;
+	return (int32_t)__ret;
+}
+
+/**
+ *
+ * \brief find most significant bit set in a 32-bit word
+ *
+ * This routine finds the first bit set starting from the most significant bit
+ * in the argument passed in and returns the index of that bit. Bits are
+ * numbered starting at 1 from the least significant bit. A return value of
+ * zero indicates that the value passed is zero.
+ *
+ * \return most significant bit set, 0 if @a val is 0
+ */
+Inline uint32_t _arc_find_msb(uint32_t val) {
+	uint32_t bit;
+
+	Asm(
+		/* BITSCAN_OPTION is required */
+		"fls.f %0, %1;\n"
+		"add.nz %0, %0, 1;\n"
+		: "=r"(bit)
+		: "r"(val));
+
+	return bit;
+}
+
+/**
+ *
+ * \brief find least significant bit set in a 32-bit word
+ *
+ * This routine finds the first bit set starting from the least significant bit
+ * in the argument passed in and returns the index of that bit.  Bits are
+ * numbered starting at 1 from the least significant bit.  A return value of
+ * zero indicates that the value passed is zero.
+ *
+ * \return least significant bit set, 0 if @a val is 0
+ */
+Inline uint32_t _arc_find_lsb(uint32_t val) {
+	uint32_t bit;
+
+	Asm(
+		/* BITSCAN_OPTION is required */
+		"ffs.f %0, %1;\n"
+		"add.nz %0, %0, 1;\n"
+		"mov.z %0, 0;\n"
+		: "=&r"(bit)
+		: "r"(val));
+
+	return bit;
 }
 
 #ifdef __cplusplus

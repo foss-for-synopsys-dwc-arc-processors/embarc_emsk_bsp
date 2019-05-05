@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-12-25
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -46,7 +43,7 @@
 #define _EMBARC_ERROR_H_
 
 #include <stdint.h>
-#include "inc/arc/arc_builtin.h"
+#include "arc_builtin.h"
 
 #ifdef __cplusplus
 extern "C" {

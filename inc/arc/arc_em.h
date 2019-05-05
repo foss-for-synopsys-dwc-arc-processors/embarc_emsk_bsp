@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-06-12
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -45,7 +42,7 @@
 #ifndef _ARC_HAL_EM_H_
 #define _ARC_HAL_EM_H_
 
-#include "inc/arc/arc.h"
+#include "arc.h"
 
 #define AUX_ACC0_LO		(0x580)
 #define AUX_ACC0_GLO		(0x581)

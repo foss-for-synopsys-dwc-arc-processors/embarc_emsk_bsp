@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2017.03
- * \date 2014-12-26
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -44,9 +41,19 @@
 extern "C" {
 #endif
 
+//comment this to disable exception readable dumping. By doing so could save some code space
+#ifndef CONFIG_ARC_EXCEPTION_DEBUG
+#define CONFIG_ARC_EXCEPTION_DEBUG
+#endif
+
 #ifndef EMBARC_PRINTF
-	#include "common/xprintf.h"
-	#define EMBARC_PRINTF xprintf
+	#ifdef MID_COMMON
+		#include "xprintf.h"
+		#define EMBARC_PRINTF xprintf
+	#else
+		#include <stdio.h>
+		#define EMBARC_PRINTF printf
+	#endif
 #endif
 
 /*

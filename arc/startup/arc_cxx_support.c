@@ -15,7 +15,7 @@
  */
 
 /* ------------------------------------------
- * Copyright (c) 2015, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -42,11 +42,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2016-03-02
- * \author Wayne Ren(wei.ren@synopsys.com)
 --------------------------------------------- */
-#include "embARC_BSP_config.h"
+
+/**
+ * \file
+ * \ingroup ARC_HAL_STARTUP
+ * \brief cpp support for ARC
+ */
+
 #if defined(__GNU__)
 /* embARC's GNU C++ support takes reference from Zephyr (cpp_xxx.c) */
 
@@ -106,7 +109,7 @@ void __do_global_dtors_aux(void)
 	unsigned int i;
 
 	nDtors = (unsigned int)__DTOR_LIST__[0];
-	i = 0;
+	i = 1;
 
 	while (i <= nDtors) {
 		__DTOR_LIST__[i++]();

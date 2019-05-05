@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-06-18
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 /**
  *
@@ -44,22 +41,29 @@
 #ifndef _EMSK_H_
 #define _EMSK_H_
 
-#include "inc/arc/arc_em.h"
+#include "arc_em.h"
+#include "arc_builtin.h"
 
-#include "board/emsk/uart/dw_uart_obj.h"
-#include "board/emsk/gpio/dw_gpio_obj.h"
-#include "board/emsk/gpio/emsk_gpio.h"
-#include "board/emsk/iic/dw_iic_obj.h"
-#include "board/emsk/spi/dw_spi_obj.h"
+#include "drivers/ip/designware/iic/dw_iic_obj.h"
+#include "drivers/ip/designware/spi/dw_spi_obj.h"
+#include "drivers/ip/designware/uart/dw_uart_obj.h"
+#include "drivers/ip/designware/gpio/dw_gpio_obj.h"
+#include "drivers/ntshell/ntshell_io.h"
+#include "drivers/sdcard/emsk_sdcard.h"
+#include "drivers/pmwifi/pmwifi.h"
+#include "drivers/flash_obj/flash_obj.h"
+#include "dev_pinmux.h"
 
-#include "board/emsk/common/emsk_timer.h"
+#include "common/emsk_timer.h"
+#include "common/emsk_gpio.h"
 
-#include "board/emsk/emsk_hardware.h"
+#include "emsk_hardware.h"
 
-#define EMSK_GPIO_PORT_A		DW_GPIO_PORT_A
-#define EMSK_GPIO_PORT_B		DW_GPIO_PORT_B
-#define EMSK_GPIO_PORT_C		DW_GPIO_PORT_C
-#define EMSK_GPIO_PORT_D		DW_GPIO_PORT_D
+#ifdef ARC_FEATURE_DMP_PERIPHERAL
+#define PERIPHERAL_BASE		ARC_FEATURE_DMP_PERIPHERAL
+#else
+#define PERIPHERAL_BASE		_arc_aux_read(AUX_DMP_PERIPHERAL)
+#endif
 
 /* common macros must be defined by all boards */
 
@@ -67,16 +71,25 @@
 #define BOARD_CONSOLE_UART_BAUD		UART_BAUDRATE_115200
 #define BOARD_ADC_IIC_ID		DW_IIC_0_ID
 #define BOARD_TEMP_SENSOR_IIC_ID	DW_IIC_0_ID
+#define BOARD_WIFI_SLIP_UART_ID		DW_UART_0_ID
 
 #define BOARD_TEMP_IIC_SLVADDR		TEMP_I2C_SLAVE_ADDRESS
+
+#define BOARD_SDCARD_SPI_ID		DW_SPI_0_ID
+#define BOARD_WIFI_SPI_ID		DW_SPI_0_ID
+#define BOARD_SFLASH_SPI_ID		DW_SPI_0_ID
+
+#define BOARD_SDCARD_SPI_LINE		EMSK_SPI_LINE_SDCARD
+#define BOARD_WIFI_SPI_LINE		EMSK_SPI_LINE_1
+#define BOARD_SFLASH_SPI_LIN		EMSK_SPI_LINE_SFLASH
+
+/** board doesn`t exist flash device */
+#define BOARD_FLASH_EXIST		(0)
 
 #ifndef BOARD_SPI_FREQ
 #define BOARD_SPI_FREQ			(1000000)
 #endif
 
-#ifndef BOARD_SPI_CLKMODE
-#define BOARD_SPI_CLKMODE		(SPI_CLK_MODE_0)
-#endif
 
 #define BOARD_SYS_TIMER_ID		TIMER_0
 #define BOARD_SYS_TIMER_INTNO		INTNO_TIMER0
@@ -87,6 +100,8 @@
 /** board timer count frequency convention based on the global timer counter */
 #define BOARD_SYS_TIMER_MS_CONV		(BOARD_SYS_TIMER_MS_HZ/BOARD_SYS_TIMER_HZ)
 
+#define BOARD_OS_TIMER_ID		TIMER_0
+#define BOARD_OS_TIMER_INTNO		INTNO_TIMER0
 
 #define BOARD_CPU_CLOCK			CLK_CPU
 #define BOARD_DEV_CLOCK			CLK_BUS_APB
@@ -99,10 +114,46 @@
 #define BOARD_SWT_CNT			(4)
 
 #define BOARD_ONBOARD_NTSHELL_ID	(EMSK_NTSHELL_0_ID)
+#define NTSHELL_CONSOLE_ID		(EMSK_NTSHELL_0_ID)
+#define NTSHELL_NETWORK_ID		(EMSK_NTSHELL_1_ID)
 
 #define OSP_DELAY_OS_COMPAT_ENABLE	(1)
 #define OSP_DELAY_OS_COMPAT_DISABLE	(0)
 
+#define WF_IPADDR_1			(192)
+#define WF_IPADDR_2			(168)
+#define WF_IPADDR_3			(43)
+#define WF_IPADDR_4			(102)
+
+#define WF_NETMASK_1			(255)
+#define WF_NETMASK_2			(255)
+#define WF_NETMASK_3			(255)
+#define WF_NETMASK_4			(0)
+
+#define WF_GATEWAY_1			(192)
+#define WF_GATEWAY_2			(168)
+#define WF_GATEWAY_3			(43)
+#define WF_GATEWAY_4			(1)
+
+#define WF_HOTSPOT_IS_OPEN		(0)
+
+#define WF_IPADDR_DHCP			(1)
+
+#define WF_HOTSPOT_NAME			"embARC"
+#define WF_HOTSPOT_PASSWD		"qazwsxedc"
+
+#define WF_ENABLE_MANUAL_SET_MAC	(0)
+
+#define WF_MAC_ADDR0			(EMSK_PMWIFI_0_MAC_ADDR0)
+#define WF_MAC_ADDR1			(EMSK_PMWIFI_0_MAC_ADDR1)
+#define WF_MAC_ADDR2			(EMSK_PMWIFI_0_MAC_ADDR2)
+#define WF_MAC_ADDR3			(EMSK_PMWIFI_0_MAC_ADDR3)
+#define WF_MAC_ADDR4			(EMSK_PMWIFI_0_MAC_ADDR4)
+#define WF_MAC_ADDR5			(EMSK_PMWIFI_0_MAC_ADDR5)
+
+#define BOARD_PMWIFI_0_ID		EMSK_PMWIFI_0_ID
+#define BOARD_PMWIFI_ID_MAX		EMSK_PMWIFI_0_ID
+#define BOARD_SLIPWIFI_0_ID		EMSK_SLIPWIFI_0_ID
 
 #define OSP_GET_CUR_SYSHZ()		(gl_emsk_sys_hz_cnt)
 #define OSP_GET_CUR_MS()		(gl_emsk_ms_cnt)

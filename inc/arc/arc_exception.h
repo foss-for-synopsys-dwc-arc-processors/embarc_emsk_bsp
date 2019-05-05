@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-07-15
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -40,9 +37,9 @@
 #ifndef _ARC_HAL_EXCEPTION_H_
 #define _ARC_HAL_EXCEPTION_H_
 
-#include "inc/embARC_toolchain.h"
-#include "inc/arc/arc.h"
-#include "inc/arc/arc_builtin.h"
+#include "embARC_toolchain.h"
+#include "arc.h"
+#include "arc_builtin.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,20 +48,19 @@ extern "C" {
 /**
  * \addtogroup ARC_HAL_EXCEPTION_CPU
  * @{
- * \todo need a conf.h from application or board to define the
- * features of processor, such as number of exception, code
- * density and FIQ.
  */
 #ifndef NUM_EXC_CPU
-#define NUM_EXC_CPU	16	/*!< number of CPU exceptions */
+/*!< number of CPU exceptions */
+#define NUM_EXC_CPU		16
 #endif
 
 #ifndef NUM_EXC_INT
-#define NUM_EXC_INT	9	/*!< number of interrupt exceptions, defined by users*/
+/*!< number of interrupt exceptions, defined in arc_feature_config.h */
+#define NUM_EXC_INT		9
 #endif
 
-#define NUM_EXC_ALL	(NUM_EXC_CPU + NUM_EXC_INT) /*!< total number of exceptions */
-
+/*!< total number of exceptions */
+#define NUM_EXC_ALL		(NUM_EXC_CPU + NUM_EXC_INT)
 
 
 #ifdef ARC_FEATURE_SEC_PRESENT
@@ -127,7 +123,62 @@ typedef struct int_exc_frame {
 } EMBARC_PACKED INT_EXC_FRAME;
 #endif
 
+typedef struct dsp_ext_frame {
+	/*  todo xy memory support */
+#if defined(ARC_FEATURE_DSP_COMPLEX)
+	uint32_t dsp_fft_ctrl;
+	uint32_t dsp_bfly0;
+#endif
+	uint32_t acc0_ghi;
+	uint32_t acc0_hi;
+	uint32_t acc0_glo;
+	uint32_t acc0_lo;
+	uint32_t dsp_ctrl;
+
+} EMBARC_PACKED DSP_EXT_FRAME;
+
+typedef struct fpu_ext_frame {
+#if defined(ARC_FEATURE_FPU_DA)
+	uint32_t dpfp2h;
+	uint32_t dpfp2l;
+	uint32_t dpfp1h;
+	uint32_t dpfp1l;
+#endif
+
+	uint32_t fpu_status;
+	uint32_t fpu_ctrl;
+
+} EMBARC_PACKED  FPU_EXT_FRAME;
+
 typedef struct callee_frame {
+
+#if ARC_FEATURE_FPU_DSP_CONTEXT
+
+#if defined(ARC_FEATURE_DSP)
+	DSP_EXT_FRAME dsp_regs;
+#endif
+
+#if defined(ARC_FEATURE_FPU)
+	FPU_EXT_FRAME fpu_ext_regs;
+#endif
+
+#if defined(ARC_FEATURE_DSP) || defined(ARC_FEATURE_FPU) || ARC_FEATURE_MPU_OPTION_NUM > 6
+	/* accl and acch, common for mpy_option >6 and fpu_fma option */
+	uint32_t r59;
+	uint32_t r58;
+#endif
+
+#endif /* ARC_FEATURE_FPU_DSP_CONTEXT */
+
+#if defined(ARC_ENABLE_EXTRA_CALLEE)
+#if ARC_FEATURE_SEC_PRESENT
+	uint32_t secure_kernel_sp;
+	uint32_t kernel_sp;
+#else
+	uint32_t user_sp;
+#endif
+#endif
+
 #ifndef ARC_FEATURE_RF16
 	uint32_t r25;
 	uint32_t r24;
@@ -266,7 +317,7 @@ Inline void arc_int_ipm_set(uint32_t intpri)
 Inline uint32_t arc_int_pri_get(const uint32_t intno)
 {
 	_arc_aux_write(AUX_IRQ_SELECT, intno);
-	return _arc_aux_read(AUX_IRQ_PRIORITY);
+	return _arc_aux_read(AUX_IRQ_PRIORITY) & 0xf;
 }
 
 /**
@@ -355,7 +406,21 @@ Inline void arc_unlock(void)
 }
 
 /**
- * \brief  lock cpu and staus
+ * \brief  cpu is locked?
+ *
+ * \returns 1 locked, 0 unlocked
+ */
+Inline uint32_t arc_locked(void)
+{
+	if (_arc_aux_read(AUX_STATUS32) & AUX_STATUS_MASK_IE) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+/**
+ * \brief  lock cpu and status
  *
  * \returns cpu status
  */
@@ -372,6 +437,21 @@ Inline uint32_t arc_lock_save(void)
 Inline void arc_unlock_restore(const uint32_t status)
 {
 	_arc_seti(status);
+}
+
+
+/**
+ * \brief  interrupt is active ?
+ *
+ * \returns 1 active, 0 inactive
+ */
+Inline uint32_t arc_int_active(void)
+{
+	if (_arc_aux_read(AUX_IRQ_ACT) == 0) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 /** @}*/
 
@@ -452,7 +532,7 @@ extern uint32_t cpu_lock_save(void);
 extern void cpu_unlock_restore(const uint32_t status);
 extern int32_t int_handler_install(const uint32_t intno, INT_HANDLER handler);
 extern INT_HANDLER int_handler_get(const uint32_t intno);
-extern int32_t int_secure_set(const uint32_t intno, uint32_t secure); 
+extern int32_t int_secure_set(const uint32_t intno, uint32_t secure);
 
 #ifdef __cplusplus
 }

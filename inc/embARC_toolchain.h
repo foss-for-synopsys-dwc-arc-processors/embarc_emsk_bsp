@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-12-25
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -36,13 +33,6 @@
  * \ingroup	TOOLCHAIN
  * \brief toolchain dependent definitions
  */
-
-#include <stdint.h>	/* C99 standard lib */
-#include <limits.h>	/* C99 standard lib */
-#include <stddef.h>	/* C99 standard lib */
-#include <stdbool.h> 	/* C99 standard lib */
-
-#include "embARC_BSP_config.h"
 
 /**
  * \addtogroup TOOLCHAIN
@@ -56,30 +46,30 @@
 extern "C" {
 #endif
 
+#ifndef __ASSEMBLY__
+
+#include <stdint.h>	/* C99 standard lib */
+#include <limits.h>	/* C99 standard lib */
+#include <stddef.h>	/* C99 standard lib */
+#include <stdbool.h> 	/* C99 standard lib */
+
 /*
  *  macro definitions of compiler extend function
  */
 #ifndef __cplusplus				/* C++ supports inline */
 #if __STDC_VERSION__ < 199901L			/* C99 supports inline */
-#ifndef inline
 #define inline	__inline__			/* inline function */
-#endif
 #endif /* __STDC_VERSION__ < 199901L */
 #endif /* __cplusplus */
 
-#ifndef Inline
 #define Inline	static __inline__		/* inline function */
-#endif
 
 #ifndef __cplusplus				/* C++ supports asm */
-#ifndef asm
 #define asm	__asm__				/* inline asm */
-#endif
 #endif /* __cplusplus */
 
-#ifndef Asm
 #define Asm	__asm__ volatile		/* inline asm (no optimization) */
-#endif
+
 
 /* compiler attributes */
 #define EMBARC_FORCEINLINE	__attribute__((always_inline))
@@ -101,9 +91,19 @@ extern "C" {
  *       __EMBARC_TO_STRING */
 #define __EMBARC_TO_STRING(x) #x
 #define EMBARC_TO_STRING(x)   __EMBARC_TO_STRING(x)
+#define EMBARC_CLZ(x)		(x == 0 ? 32 : __builtin_clz(x))
+#define EMBARC_BITS(x)		(32 - EMBARC_CLZ(x))
+/* x must be > 0 */
+#define EMBARC_POW2_CEIL(x) ((1 << (31 - EMBARC_CLZ(x))) < x ?  \
+		1 << (31 - EMBARC_CLZ(x) + 1) : \
+		1 << (31 - EMBARC_CLZ(x)))
+
+
+#define DIV_ROUND_UP(x, y)  (((x) + (y) - 1) / (y))
 
 #if defined(__GNU__)
 /* GNU tool specific definitions */
+
 
 #elif defined(__MW__)
 /* Metaware tool specific definitions */
@@ -112,6 +112,8 @@ extern "C" {
 #else
 #error "unsupported toolchain"
 #endif
+#endif /* __ASSEMBLY__ */
+
 
 #ifdef __cplusplus
 }

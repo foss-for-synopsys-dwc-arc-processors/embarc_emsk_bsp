@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2017.03
- * \date 2014-07-03
- * \author Huaqi Fang(Huaqi.Fang@synopsys.com)
 --------------------------------------------- */
 /**
  *
@@ -49,8 +46,6 @@
  */
 #ifndef _EMBARC_BOARD_H_
 #define _EMBARC_BOARD_H_
-
-#include "embARC_BSP_config.h"
 /**
  * \todo	add comments and documents to describe the macros
  * \note 	the following macros must use the same name, because
@@ -58,10 +53,31 @@
  */
 /** here is a sample of EMSK board resource definitions */
 #ifdef BOARD_EMSK
-#include "board/emsk/emsk.h"
+#include "emsk/emsk.h"
 #endif /* BOARD_EMSK */
 
 /** you can add your board configuration as BOARD_EMSK defined up */
+
+/** nsim related definition */
+#ifdef BOARD_NSIM
+#include "nsim/nsim.h"
+#endif /* BOARD_NSIM */
+
+#ifdef BOARD_AXS
+#include "axs/axs.h"
+#endif /* BOARD_AXS */
+
+#ifdef BOARD_HSDK
+#include "hsdk/hsdk.h"
+#endif /* BOARD_HSDK */
+
+#ifdef BOARD_IOTDK
+#include "iotdk/iotdk.h"
+#endif /* BOARD_IOTDK */
+
+#ifdef BOARD_EMSDP
+#include "emsdp/emsdp.h"
+#endif /* BOARD_EMDK */
 
 #endif /* _EMBARC_BOARD_H_ */
 

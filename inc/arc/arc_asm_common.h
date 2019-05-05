@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-07-15
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -41,8 +38,7 @@
 #ifndef _ARC_HAL_ASM_COMMON_H_
 #define _ARC_HAL_ASM_COMMON_H_
 
-#include "embARC_BSP_config.h"
-#include "arc_feature_config.h"
+#include "arc.h"
 
 /* Note on the LD/ST addr modes with addr reg wback
  *
@@ -92,6 +88,83 @@
 .endm
 #endif
 
+.macro SAVE_R58_R59
+#if defined(ARC_FEATURE_FPU) || defined(ARC_FEATURE_DSP) || ARC_FEATURE_MPU_OPTION_NUM > 6
+	PUSH r58
+	PUSH r59
+#endif
+.endm
+
+.macro RESTORE_R58_R59
+#if defined(ARC_FEATURE_FPU) || defined(ARC_FEATURE_DSP) || ARC_FEATURE_MPU_OPTION_NUM > 6
+	POP r59
+	POP r58
+#endif
+.endm
+
+.macro SAVE_FPU_REGS
+#if defined(ARC_FEATURE_FPU)
+	PUSHAX AUX_FPU_CTRL
+	PUSHAX AUX_FPU_STATUS
+
+#if defined(ARC_FEATURE_FPU_DA)
+	PUSHAX AUX_FPU_DPFP1L
+	PUSHAX AUX_FPU_DPFP1H
+	PUSHAX AUX_FPU_DPFP2L
+	PUSHAX AUX_FPU_DPFP2H
+#endif
+
+#endif
+.endm
+
+.macro RESTORE_FPU_REGS
+#if defined(ARC_FEATURE_FPU)
+
+#if defined(ARC_FEATURE_FPU_DA)
+	POPAX AUX_FPU_DPFP2H
+	POPAX AUX_FPU_DPFP2L
+	POPAX AUX_FPU_DPFP1H
+	POPAX AUX_FPU_DPFP1L
+#endif
+	POPAX AUX_FPU_STATUS
+	POPAX AUX_FPU_CTRL
+#endif
+
+.endm
+
+
+.macro SAVE_DSP_REGS
+#if defined(ARC_FEATURE_DSP)
+	PUSHAX AUX_DSP_CTRL
+	PUSHAX AUX_ACC0_LO
+	PUSHAX AUX_ACC0_GLO
+	PUSHAX AUX_ACC0_HI
+	PUSHAX AUX_ACC0_GHI
+
+#if defined(ARC_FEATURE_DSP_COMPLEX)
+	PUSHAX AUX_DSP_BFLY0
+	PUSHAX AUX_DSP_FFT_CTRL
+#endif
+
+#endif
+.endm
+
+.macro RESTORE_DSP_REGS
+#if defined(ARC_FEATURE_DSP)
+
+#if defined(ARC_FEATURE_DSP_COMPLEX)
+	POPAX AUX_DSP_FFT_CTRL
+	POPAX AUX_DSP_BFLY0
+#endif
+	POPAX AUX_ACC0_GHI
+	POPAX AUX_ACC0_HI
+	POPAX AUX_ACC0_GLO
+	POPAX AUX_ACC0_LO
+	POPAX AUX_DSP_CTRL
+#endif
+.endm
+
+
 /*--------------------------------------------------------------
  * Helpers to save/restore callee-saved regs:
  * used by several macros below
@@ -112,9 +185,41 @@
 	PUSH	r24
 	PUSH	r25
 #endif
+
+#if defined(ARC_ENABLE_EXTRA_CALLEE)
+#if ARC_FEATURE_SEC_PRESENT
+	PUSHAX AUX_KERNEL_SP
+	PUSHAX AUX_SEC_K_SP
+#else
+	PUSHAX AUX_USER_SP
+#endif
+#endif
+
+#if ARC_FEATURE_FPU_DSP_CONTEXT
+	SAVE_R58_R59
+	SAVE_FPU_REGS
+	SAVE_DSP_REGS
+#endif
+
 .endm
 
 .macro RESTORE_CALLEE_REGS
+
+#if ARC_FEATURE_FPU_DSP_CONTEXT
+	RESTORE_DSP_REGS
+	RESTORE_FPU_REGS
+	RESTORE_R58_R59
+#endif
+
+#if defined(ARC_ENABLE_EXTRA_CALLEE)
+#if ARC_FEATURE_SEC_PRESENT
+	POPAX AUX_SEC_K_SP
+	POPAX AUX_KERNEL_SP
+#else
+	POPAX AUX_USER_SP
+#endif
+#endif
+
 #ifndef ARC_FEATURE_RF16
 	POP	r25
 	POP	r24
@@ -148,6 +253,39 @@
 	mov	r15, 0
 	mov	r14, 0
 	mov	r13, 0
+#if ARC_FEATURE_FPU_DSP_CONTEXT
+
+#if defined(ARC_FEATURE_FPU)
+
+#if defined(ARC_FEATURE_FPU_DA)
+	sr 	0, [AUX_FPU_DPFP2H]
+	sr 	0, [AUX_FPU_DPFP2L]
+	sr 	0, [AUX_FPU_DPFP1H]
+	sr 	0, [AUX_FPU_DPFP1L]
+#endif
+	sr 	0, [AUX_FPU_STATUS]
+	sr 	0, [AUX_FPU_CTRL]
+#endif /* ARC_FEATURE_FPU */
+
+#if defined(ARC_FEATURE_DSP)
+
+#if defined(ARC_FEATURE_DSP_COMPLEX)
+	sr 	0, [AUX_DSP_FFT_CTRL]
+	sr 	0, [AUX_DSP_BFLY0]
+#endif
+	sr 	0, [AUX_ACC0_GHI]
+	sr 	0, [AUX_ACC0_HI]
+	sr 	0, [AUX_ACC0_GLO]
+	sr 	0, [AUX_ACC0_LO]
+	sr 	0, [AUX_DSP_CTRL]
+#endif /* ARC_FEATURE_DSP */
+
+#if defined(ARC_FEATURE_FPU) || defined(ARC_FEATURE_DSP) || ARC_FEATURE_MPU_OPTION_NUM > 6
+	mov 	r59, 0
+	mov	r58, 0
+#endif
+
+#endif /* ARC_FEATURE_FPU_DSP_CONTEXT */
 .endm
 
 .macro CLEAR_SCRATCH_REGS
@@ -168,7 +306,6 @@
 	mov 	r29, 0
 	mov 	r30, 0
 .endm
-
 
 .macro SAVE_LP_REGS
 	PUSH	r60
@@ -267,12 +404,14 @@
 
 #if ARC_FEATURE_RGF_BANKED_REGS == 4 || ARC_FEATURE_BANKED_REGS == 8 || \
 	ARC_FEATURE_RGF_BANKED_REGS == 16
+#ifndef ARC_FEATURE_RF16
 	PUSH	r4
 	PUSH	r5
 	PUSH	r6
 	PUSH	r7
 	PUSH	r8
 	PUSH	r9
+#endif
 #endif
 
 #if ARC_FEATURE_RGF_BANKED_REGS == 4 || ARC_FEATURE_BANKED_REGS == 8
@@ -337,12 +476,14 @@
 
 #if ARC_FEATURE_RGF_BANKED_REGS == 4 || ARC_FEATURE_BANKED_REGS == 8 || \
 	ARC_FEATURE_RGF_BANKED_REGS == 16
+#ifndef ARC_FEATURE_RF16
 	POP		r9
 	POP		r8
 	POP		r7
 	POP		r6
 	POP		r5
 	POP		r4
+#endif
 #endif
 
 #endif  /* #ifndef ARC_FEATURE_RGF_BANKED_REGS */
@@ -371,7 +512,7 @@
 	POP	r12
 .endm
 
-#if SECURESHIELD_VERSION == 2
+#if ARC_FEATURE_SEC_PRESENT
 /* exception prologue, create the same frame of interrupt manually */
 .macro EXCEPTION_PROLOGUE
 	st.as	r10, [sp, -6]	/* save r10 first, free up a register*/
@@ -535,7 +676,7 @@
 #endif
 .endm
 
-#endif /* SECURESHIELD_VERSION == 2 */
+#endif /* ARC_FEATURE_SEC_PRESENT */
 
 #endif	/* _ARC_HAL_ASM_COMMON_H */
 /** @endcond */

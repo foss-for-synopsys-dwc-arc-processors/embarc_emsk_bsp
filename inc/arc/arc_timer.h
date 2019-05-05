@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-07-15
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -44,8 +41,9 @@
 
 #ifndef _ARC_HAL_TIMER_H_
 #define _ARC_HAL_TIMER_H_
-#include "inc/arc/arc.h"
-#include "inc/embARC_toolchain.h"
+#include "arc.h"
+#include "arc_builtin.h"
+#include "embARC_toolchain.h"
 
 /**
  * \name arc internal timers names
@@ -54,9 +52,30 @@
 #define TIMER_0		0 	/*!< macro name for arc internal timer 0 */
 #define TIMER_1		1 	/*!< macro name for arc internal timer 1 */
 #define TIMER_RTC	2 	/*!< macro name for arc internal RTC */
+#define SECURE_TIMER_0		0 	/*!< macro name for arc internal secure timer 0 */
+#define SECURE_TIMER_1		1 	/*!< macro name for arc internal secure timer 1 */
 
 /** @} */
-
+#ifdef ARC_FEATURE_TIMER0_VECTOR
+#define INTNO_TIMER0			ARC_FEATURE_TIMER0_VECTOR	/*!< ARC Timer0 */
+#else
+#define INTNO_TIMER0 16
+#endif
+#ifdef ARC_FEATURE_TIMER1_VECTOR
+#define INTNO_TIMER1			ARC_FEATURE_TIMER1_VECTOR	/*!< ARC Timer1 */
+#else
+#define INTNO_TIMER1 17
+#endif
+#ifdef ARC_FEATURE_SEC_TIMER0_VECTOR
+#define INTNO_SECURE_TIMER0		ARC_FEATURE_SEC_TIMER0_VECTOR	/*!< Core Secure Timer 0 */
+#else
+#define INTNO_SECURE_TIMER0 20
+#endif
+#ifdef ARC_FEATURE_SEC_TIMER1_VECTOR
+#define INTNO_SECURE_TIMER1		ARC_FEATURE_SEC_TIMER1_VECTOR	/*!< Core Secure Timer 1 */
+#else
+#define INTNO_SECURE_TIMER1 21
+#endif
 /**
  * \name bit definition of RTC CTRL reg
  * @{
@@ -84,12 +103,18 @@
 extern "C" {
 #endif
 
-extern int32_t arc_timer_present(const uint32_t no);
-extern int32_t arc_timer_start(const uint32_t no, const uint32_t mode, const uint32_t val);
-extern int32_t arc_timer_stop(const uint32_t no);
-extern int32_t arc_timer_current(const uint32_t no, void* val);
-extern int32_t arc_timer_int_clear(const uint32_t no);
-extern void arc_timer_init(void);
+extern int32_t timer_present(const uint32_t no);
+extern int32_t timer_start(const uint32_t no, const uint32_t mode, const uint32_t val);
+extern int32_t timer_stop(const uint32_t no);
+extern int32_t timer_current(const uint32_t no, void* val);
+extern int32_t timer_int_clear(const uint32_t no);
+extern void timer_init(void);
+extern int32_t secure_timer_present(const uint32_t no);
+extern int32_t secure_timer_start(const uint32_t no, const uint32_t mode, const uint32_t val);
+extern int32_t secure_timer_stop(const uint32_t no);
+extern int32_t secure_timer_current(const uint32_t no, void* val);
+extern int32_t secure_timer_int_clear(const uint32_t no);
+extern void secure_timer_init(void);
 
 #ifdef __cplusplus
 }

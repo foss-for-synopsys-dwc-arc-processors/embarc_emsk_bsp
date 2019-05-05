@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2014-07-15
- * \author Wayne Ren(Wei.Ren@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -44,10 +41,9 @@
 /** @cond STARTUP_ASM */
 
 #define __ASSEMBLY__
-#include "embARC_BSP_config.h"
-#include "inc/arc/arc.h"
+#include "arc.h"
 
-	.file "arc_startup.S"
+	.file "arc_startup.s"
 
 .weak	_f_sdata		/* start of small data, defined in link script */
 .weak	init_hardware_hook	/* app hardware init hook */
@@ -119,7 +115,7 @@ _arc_reset_stage2:
 #endif
 
 /* init stack */
-#if ARC_FEATURE_RGF_BANKED_REGS >= 16 && ARC_FEATURE_RGF_BANKED_REGS > 1 && ARC_FEATURE_FIRQ == 1
+#if ARC_FEATURE_RGF_BANKED_REGS >= 16 && ARC_FEATURE_FIRQ == 1
 #if _STACKSIZE < 512
 #error "not enough stack size for irq and firq"
 #endif
@@ -130,14 +126,14 @@ _arc_reset_stage2:
 	or      r0, r0, 0x10000
 	kflag   r0
 /* set sp, gp, fp in bank1 */
-	mov     sp, _e_stack
+	mov     sp, _f_stack+256
 	mov     gp, _f_sdata
 	mov     fp, 0
 /* come back to bank0 */
 	lr      r0, [AUX_STATUS32]
 	bic     r0, r0, 0x70000
 	kflag   r0
-	mov	sp, _e_stack-256
+	mov	sp, _e_stack
 #else
 	mov	sp, _e_stack	/* init stack pointer */
 #endif
@@ -195,23 +191,42 @@ _s3_clear_bss_loop:
 	cmp	r0, r1
 	jlt	_s3_clear_bss_loop
 
+#if ARC_FEATURE_STACK_CHECK
+	mov r0, _e_stack
+	mov r1, _f_stack
+#if ARC_FEATURE_SEC_PRESENT
+	sr r1, [AUX_S_KSTACK_TOP]
+	sr r0, [AUX_S_KSTACK_BASE]
+	lr r0, [AUX_SEC_STAT]
+	bset r0, r0, AUX_SEC_STAT_BIT_SSC
+	sflag r0
+#else
+	sr r1, [AUX_KSTACK_TOP]
+	sr r0, [AUX_KSTACK_BASE]
+	lr r0, [AUX_STATUS32]
+	bset r0, r0, AUX_STATUS_BIT_SC
+	kflag r0
+#endif
+#endif
 /* STAGE 3: go to main */
 
 _arc_reset_call_main:
-
-/* \todo add cpp init here */
 	mov	r0, init_software_hook
 	cmp	r0, 0
 	jlne	[r0]
 /* board level library init */
 #ifdef	LIB_SECURESHIELD
 	jl 	secureshield_start
+#if SECURESHIELD_VERSION == 2
+	jl 	secureshield_except_bit_clear
+#endif
 #else
 /* early init of interrupt and exception */
 	jl	exc_int_init
-#endif
-/* init cache */
+	/* init cache */
 	jl	arc_cache_init
+#endif
+
 #if defined(__MW__)
 	jl	_init
 #elif defined(__GNU__)
@@ -229,7 +244,7 @@ _arc_reset_call_main:
 	.align 4
 _exit_halt:
 _exit_loop:
-	flag	0x1
+	flag	AUX_STATUS_MASK_HALT
 	nop
 	nop
 	nop

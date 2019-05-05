@@ -1,5 +1,5 @@
 /* ------------------------------------------
- * Copyright (c) 2016, Synopsys, Inc. All rights reserved.
+ * Copyright (c) 2017, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \version 2016.05
- * \date 2016-09-08
- * \author Huaqi Fang(Huaqi.Fang@synopsys.com)
 --------------------------------------------- */
 
 /**
@@ -45,10 +42,9 @@
 #ifndef _ARC_FEATURE_CONFIG_H_
 #define _ARC_FEATURE_CONFIG_H_
 
-// Enable core_config.h in EMSK OSP
-//#ifdef EMBARC_TCF_GENERATED
-#include "arc_core_config.h"
-//#endif
+#ifdef EMBARC_TCF_GENERATED
+#include "core_config.h"
+#endif
 
 /** ARC baseline instruction set version number */
 #if !defined(_ARCVER)
@@ -354,7 +350,7 @@
 #define ARC_FEATURE_DMAC		core_config_dmac
 #define CORE_DMAC_CHANNELS		core_config_dmac_channels
 #define CORE_DMAC_REGISTERS		core_config_dmac_registers
-#if core_config_bcr_dmac_build_int_cfg == 2 && core_config_bcr_dmac_build_int_cfg == 4
+#if core_config_bcr_dmac_build_int_cfg == 2 || core_config_bcr_dmac_build_int_cfg == 4
 #define DMA_MULTI_IRQ			1
 #else
 #define DMA_MULTI_IRQ			0
@@ -365,6 +361,10 @@
 #define ARC_FEATURE_DMAC_REGISTERS	core_config_dmac_registers
 #define ARC_FEATURE_DMAC_INT_CFG	core_config_bcr_dmac_build_int_cfg
 #define ARC_FEATURE_DMAC_FIFO_DEPTH	core_config_dmac_fifo_depth
+
+#ifndef CORE_DMAC_INTERNAL_VERSION
+#define CORE_DMAC_INTERNAL_VERSION	ARC_FEATURE_DMAC_VERSION
+#endif
 
 #ifdef ARC_FEATURE_SEC_TIMER0_PRESENT
 #define DMA_IRQ_NUM_START		22
@@ -377,6 +377,48 @@
 #endif
 #endif
 
+/** ARC mpy option  */
+#if !defined(ARC_FEATURE_MPU_OPTION_NUM)
+#define ARC_FEATURE_MPU_OPTION_NUM  	core_config_mpy_option_num
+#endif
+
+#if !defined(ARC_FEATURE_FPU_DSP_CONTEXT)
+#define ARC_FEATURE_FPU_DSP_CONTEXT	1	/* whether to put FPU and DSP regs into the context */
+#endif
+
+/** ARC FPU options */
+#if !defined(ARC_FEATURE_FPU)
+
+#if core_config_bcr_fpu_build_sp || core_config_bcr_fpu_build_dp
+#define ARC_FEATURE_FPU 		1
+
+#if core_config_bcr_fpu_build_da
+#define ARC_FEATURE_FPU_DA		1
+#endif
+
+#endif
+
+#endif
+
+/** ARC DSP options */
+#if !defined(ARC_FEATURE_DSP)
+
+#if core_config_dsp1 || core_config_dsp2
+#define ARC_FEATURE_DSP 		1
+
+#if core_config_dsp_complex
+#define ARC_FEATURE_DSP_COMPLEX 	1
+#endif
+
+#endif
+
+#endif
+
+#if !defined(ARC_FEATURE_STACK_CHECK)
+#if core_config_stack_check
+#define ARC_FEATURE_STACK_CHECK 	1
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
